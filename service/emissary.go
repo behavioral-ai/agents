@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/advanced-go/agents/common"
 	"github.com/advanced-go/common/messaging"
+	"github.com/advanced-go/resiliency/guidance"
 )
 
 // emissary attention
@@ -32,7 +33,7 @@ func emissaryAttend(r *service, observe *common.Observation) {
 				r.emissary.Close()
 				return
 			case messaging.DataChangeEvent:
-				if p := common.GetCalendar(r.handler, r.agentId, msg); p != nil {
+				if p := guidance.GetCalendar(r.handler, r.agentId, msg); p != nil {
 				}
 			default:
 				r.handler.Handle(common.MessageEventErrorStatus(r.agentId, msg))

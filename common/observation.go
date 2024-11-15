@@ -21,7 +21,7 @@ var Observe = func() *Observation {
 		Timeseries: func(h core.ErrorHandler, origin core.Origin) (timeseries.Entry, *core.Status) {
 			ctx, cancel := context.WithTimeout(context.Background(), timeseriesDuration)
 			defer cancel()
-			e, status := timeseries.Get(ctx, origin)
+			e, status := timeseries.Query(ctx, origin)
 			if !status.OK() && !status.NotFound() {
 				h.Handle(status)
 			}
