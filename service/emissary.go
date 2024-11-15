@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/advanced-go/agents/common"
 	"github.com/advanced-go/common/messaging"
-	"github.com/advanced-go/resiliency/common"
 )
 
 // emissary attention
