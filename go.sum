@@ -1,0 +1,8 @@
+github.com/advanced-go/common v0.0.0-20241107192729-529f35719a51 h1:uLyeIn/HDGevlBe/GMWOmmH0wchNgm1oIOndDBIboLY=
+github.com/advanced-go/common v0.0.0-20241107192729-529f35719a51/go.mod h1:ZO9q9c1GB9gQOeuWiAk0fT7pH8nfmNarGHi/Qu4LP/Q=
+github.com/advanced-go/log v0.0.0-20241114205934-ffe4b82174dd h1:x7fzW512ogP+HqyN5RRw2U/fWMbhgeD+KNlcHXuH3c8=
+github.com/advanced-go/log v0.0.0-20241114205934-ffe4b82174dd/go.mod h1:5Xg63AfI0Qe4fdvgvcilsmyfPoqz2d6ygiNrrFGFYjM=
+github.com/advanced-go/resiliency v0.0.0-20241115141315-ac116a0a8af4 h1:nVvgZTTAqQVkzrp8ICS/lD0t2IuxqTpnKot50Vjgmyk=
+github.com/advanced-go/resiliency v0.0.0-20241115141315-ac116a0a8af4/go.mod h1:Q/dkR/o2tZ2GS5yKVZzqBB9oSO5aNATkOnZA15ISLHE=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
