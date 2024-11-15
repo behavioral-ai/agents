@@ -1,5 +1,5 @@
 package service
 
 const (
-	PkgPath = "github/advanced-go/resiliency/service"
+	PkgPath = "github/advanced-go/agents/service"
 )

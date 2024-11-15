@@ -4,5 +4,7 @@ github.com/advanced-go/log v0.0.0-20241114210224-f5157780c204 h1:n4OFEy2bYrBZUAQ
 github.com/advanced-go/log v0.0.0-20241114210224-f5157780c204/go.mod h1:5Xg63AfI0Qe4fdvgvcilsmyfPoqz2d6ygiNrrFGFYjM=
 github.com/advanced-go/resiliency v0.0.0-20241115142259-369a2dc4320a h1:z6oFGvbbMHHmGZhiuXPG236s20z59epaR3ldEvrbjMU=
 github.com/advanced-go/resiliency v0.0.0-20241115142259-369a2dc4320a/go.mod h1:Q/dkR/o2tZ2GS5yKVZzqBB9oSO5aNATkOnZA15ISLHE=
+github.com/advanced-go/resiliency v0.0.0-20241115145047-908dc878f714 h1:NtVZUrU9WK+kc8IfPNdDCFtX+kkAA7SrLJ6jzO9Vhyk=
+github.com/advanced-go/resiliency v0.0.0-20241115145047-908dc878f714/go.mod h1:Q/dkR/o2tZ2GS5yKVZzqBB9oSO5aNATkOnZA15ISLHE=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
