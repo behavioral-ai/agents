@@ -8,10 +8,6 @@ import (
 	"reflect"
 )
 
-const (
-	ContentTypeCalendar = "application/calendar"
-)
-
 func ProfileTypeErrorStatus(agentId string, t any) *core.Status {
 	err := errors.New(fmt.Sprintf("error: profile data change type:%v is invalid for agent:%v", reflect.TypeOf(t), agentId))
 	return core.NewStatusError(core.StatusInvalidArgument, err)

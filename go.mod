@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/advanced-go/common v0.0.0-20241107192729-529f35719a51
-	github.com/advanced-go/resiliency v0.0.0-20241115141315-ac116a0a8af4
+	github.com/advanced-go/resiliency v0.0.0-20241115142259-369a2dc4320a
 )
 
 require (

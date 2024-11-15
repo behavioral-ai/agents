@@ -1,9 +1,9 @@
 package caseofficer1
 
 import (
+	common1 "github.com/advanced-go/agents/common"
 	"github.com/advanced-go/common/core"
 	"github.com/advanced-go/common/messaging"
-	"github.com/advanced-go/resiliency/common"
 	"github.com/advanced-go/resiliency/guidance"
 )
 
@@ -29,11 +29,11 @@ func emissaryAttend(c *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidanc
 				c.handler.AddActivity(c.agentId, messaging.ShutdownEvent)
 				return
 			case messaging.DataChangeEvent:
-				if msg.IsContentType(common.ContentTypeCalendar) {
+				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					c.serviceAgents.Broadcast(msg)
 				}
 			default:
-				c.handler.Handle(common.MessageEventErrorStatus(c.agentId, msg))
+				c.handler.Handle(common1.MessageEventErrorStatus(c.agentId, msg))
 			}
 		default:
 		}
