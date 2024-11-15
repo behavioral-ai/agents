@@ -1,10 +1,10 @@
 package caseofficer1
 
 import (
+	"github.com/advanced-go/agents/service"
 	"github.com/advanced-go/common/core"
 	"github.com/advanced-go/common/messaging"
 	"github.com/advanced-go/resiliency/guidance"
-	"github.com/advanced-go/resiliency/service"
 )
 
 // A nod to Linus Torvalds and plain C
