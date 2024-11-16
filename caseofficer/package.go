@@ -1,4 +1,4 @@
-package caseofficer1
+package caseofficer
 
 const (
 	PkgPath = "github/advanced-go/agents/caseofficer"

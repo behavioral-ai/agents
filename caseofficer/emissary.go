@@ -1,7 +1,6 @@
-package caseofficer1
+package caseofficer
 
 import (
-	"github.com/advanced-go/agents/common"
 	"github.com/advanced-go/common/core"
 	"github.com/advanced-go/common/messaging"
 	"github.com/advanced-go/resiliency/guidance"
@@ -33,7 +32,7 @@ func emissaryAttend(c *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidanc
 					c.serviceAgents.Broadcast(msg)
 				}
 			default:
-				c.handler.Handle(common.MessageEventErrorStatus(c.agentId, msg))
+				c.handler.Handle(MessageEventErrorStatus(c.agentId, msg))
 			}
 		default:
 		}

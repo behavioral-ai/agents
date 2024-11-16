@@ -1,4 +1,4 @@
-package caseofficer1
+package caseofficer
 
 import (
 	"github.com/advanced-go/common/core"
