@@ -22,14 +22,14 @@ var (
 					updateExchange(c, entry, newAgent)
 				}
 				c.startup()
-				return core.StatusOK()
+				return status
 			},
 			update: func(c *caseOfficer, guide *guidance.Guidance, newAgent newServiceAgent) *core.Status {
 				entry, status := guide.NewAssignments(c.handler, c.origin)
 				if status.OK() {
 					updateExchange(c, entry, newAgent)
 				}
-				return core.StatusOK()
+				return status
 			},
 		}
 	}()
