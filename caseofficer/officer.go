@@ -18,7 +18,7 @@ type caseOfficer struct {
 	origin  core.Origin
 
 	ticker        *messaging.Ticker
-	ctrlC         chan *messaging.Message
+	emissary      *messaging.Channel
 	handler       messaging.OpsAgent
 	serviceAgents *messaging.Exchange
 	shutdownFunc  func()
@@ -38,8 +38,8 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent) *caseOfficer {
 	c := new(caseOfficer)
 	c.agentId = AgentUri(origin)
 	c.origin = origin
-	c.ticker = messaging.NewTicker(assignmentDuration)
-	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
+	c.ticker = messaging.NewPrimaryTicker(assignmentDuration)
+	c.emissary = messaging.NewEmissaryChannel(true)
 	c.handler = handler
 	c.serviceAgents = messaging.NewExchange()
 	return c
@@ -52,7 +52,7 @@ func (c *caseOfficer) String() string { return c.Uri() }
 func (c *caseOfficer) Uri() string { return c.agentId }
 
 // Message - message the agent
-func (c *caseOfficer) Message(m *messaging.Message) { c.ctrlC <- m }
+func (c *caseOfficer) Message(m *messaging.Message) { c.emissary.C <- m }
 
 // Handle - error handler
 func (c *caseOfficer) Handle(status *core.Status) *core.Status {
@@ -75,7 +75,7 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend(c, officer, guidance.Guide, initAgent)
+	go emissaryAttend[messaging.MutedNotifier](c, officer, guidance.Guide, initAgent)
 }
 
 // Shutdown - shutdown the agent
@@ -90,10 +90,11 @@ func (c *caseOfficer) Shutdown() {
 	}
 	msg := messaging.NewControlMessage(c.agentId, c.agentId, messaging.ShutdownEvent)
 	c.serviceAgents.Shutdown()
-	if c.ctrlC != nil {
-		c.ctrlC <- msg
-	}
+	c.emissary.C <- msg
+}
 
+func (c *caseOfficer) IsFinalized() bool {
+	return c.emissary.IsFinalized() && c.ticker.IsFinalized()
 }
 
 func (c *caseOfficer) startup() {
@@ -101,7 +102,7 @@ func (c *caseOfficer) startup() {
 }
 
 func (c *caseOfficer) shutdown() {
-	close(c.ctrlC)
+	c.emissary.Close()
 	c.ticker.Stop()
 }
 

@@ -39,61 +39,64 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent) *service {
 	r := new(service)
 	r.origin = origin
 	r.agentId = serviceAgentUri(origin)
-
-	// Emissary channel
 	r.duration = defaultDuration
-	r.emissary = messaging.NewEnabledChannel()
 
-	// Master channel
-	r.master = messaging.NewEnabledChannel()
+	// Channels
+	r.emissary = messaging.NewEmissaryChannel(true)
+	r.master = messaging.NewMasterChannel(true)
+
 	r.handler = handler
 	return r
 }
 
 // String - identity
-func (r *service) String() string { return r.Uri() }
+func (s *service) String() string { return s.Uri() }
 
 // Uri - agent identifier
-func (r *service) Uri() string { return r.agentId }
+func (s *service) Uri() string { return s.agentId }
 
 // Message - message the agent
-func (r *service) Message(m *messaging.Message) {
+func (s *service) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
 	// Specifically for the lhc or profile content
 	if m.Channel() == messaging.ChannelLeft {
-		r.emissary.C <- m
+		s.emissary.C <- m
 	} else {
-		r.master.C <- m
+		s.master.C <- m
 	}
 }
 
 // Add - add a shutdown function
-func (r *service) Add(f func()) { r.shutdownFunc = messaging.AddShutdown(r.shutdownFunc, f) }
+func (s *service) Add(f func()) { s.shutdownFunc = messaging.AddShutdown(s.shutdownFunc, f) }
 
 // Run - run the agent
-func (r *service) Run() {
-	if r.running {
+func (s *service) Run() {
+	if s.running {
 		return
 	}
-	go masterAttend(r)
-	go emissaryAttend(r, common.Observe)
-	r.running = true
+	go masterAttend[messaging.MutedNotifier](s)
+	go emissaryAttend[messaging.MutedNotifier](s, common.Observe)
+	s.running = true
 }
 
 // Shutdown - shutdown the agent
-func (r *service) Shutdown() {
-	if !r.running {
+func (s *service) Shutdown() {
+	if !s.running {
 		return
 	}
-	r.running = false
-	if r.shutdownFunc != nil {
-		r.shutdownFunc()
+	s.running = false
+	if s.shutdownFunc != nil {
+		s.shutdownFunc()
 	}
-	msg := messaging.NewControlMessage(r.agentId, r.agentId, messaging.ShutdownEvent)
-	r.emissary.Enable()
-	r.emissary.C <- msg
-	r.master.Enable()
-	r.master.C <- msg
+	msg := messaging.NewControlMessage(s.agentId, s.agentId, messaging.ShutdownEvent)
+	s.emissary.Enable()
+	s.emissary.C <- msg
+	s.master.Enable()
+	s.master.C <- msg
+}
+
+func (s *service) IsFinalized() bool {
+	return s.emissary.IsFinalized() && s.master.IsFinalized()
 }

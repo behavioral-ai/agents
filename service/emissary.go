@@ -7,8 +7,10 @@ import (
 )
 
 // emissary attention
-func emissaryAttend(r *service, observe *common.Observation) {
-	ticker := messaging.NewTicker(r.duration)
+func emissaryAttend[T messaging.Notifier](agent *service, observe *common.Observation) {
+	var notify T
+
+	ticker := messaging.NewPrimaryTicker(agent.duration)
 	//limit := timeseries1.Threshold{}
 	//common1.SetPercentileThreshold(r.handler, r.origin, &limit, observe)
 
@@ -22,21 +24,25 @@ func emissaryAttend(r *service, observe *common.Observation) {
 			//			m := messaging.NewRightChannelMessage("", r.agentId, messaging.ObservationEvent, common1.NewObservation(actual, limit))
 			//			r.Message(m)
 			//			}
+			notify.OnTick(agent, ticker)
 		default:
 		}
 		// message processing
 		select {
-		case msg := <-r.emissary.C:
+		case msg := <-agent.emissary.C:
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				ticker.Stop()
-				r.emissary.Close()
+				agent.emissary.Close()
+				notify.OnMessage(agent, msg, agent.emissary)
 				return
 			case messaging.DataChangeEvent:
-				if p := guidance.GetCalendar(r.handler, r.agentId, msg); p != nil {
+				if p := guidance.GetCalendar(agent.handler, agent.agentId, msg); p != nil {
 				}
+				notify.OnMessage(agent, msg, agent.emissary)
+
 			default:
-				r.handler.Handle(common.MessageEventErrorStatus(r.agentId, msg))
+				notify.OnError(agent, agent.handler.Handle(common.MessageEventErrorStatus(agent.Uri(), msg)))
 			}
 		default:
 		}
