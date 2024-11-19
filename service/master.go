@@ -17,11 +17,9 @@ func masterAttend(agent *service) {
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.masterFinalize()
-				agent.handler.Trace(agent, messaging.ShutdownEvent)
 				agent.handler.OnMessage(agent, msg, agent.master)
 				return
 			case messaging.ObservationEvent:
-				agent.handler.Trace(agent, messaging.ObservationEvent)
 				/*
 					observe, ok := msg.Body.(*common1.Observation)
 					if !ok {

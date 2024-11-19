@@ -15,7 +15,6 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 		// new assignment processing
 		select {
 		case <-agent.ticker.C():
-			agent.Trace(agent, "onTick()")
 			fn.update(agent, guide, newAgent)
 			agent.OnTick(agent, agent.ticker)
 		default:
@@ -26,14 +25,12 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.finalize()
-				agent.Trace(agent, msg)
 				agent.OnMessage(agent, msg, agent.emissary)
 				return
 			case messaging.DataChangeEvent:
 				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					agent.serviceAgents.Broadcast(msg)
 				}
-				agent.Trace(agent, msg)
 				agent.OnMessage(agent, msg, agent.emissary)
 			default:
 				agent.OnError(agent, agent.Notify(MessageEventErrorStatus(agent.Uri(), msg)))
