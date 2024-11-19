@@ -66,6 +66,19 @@ func (c *caseOfficer) Trace(agentId string, content any) {
 	c.handler.Trace(agentId, content)
 }
 
+// OnTick - tick event dispatch
+func (c *caseOfficer) OnTick(agent any, src *messaging.Ticker) { c.handler.OnTick(agent, src) }
+
+// OnMessage - message receive event dispatch
+func (c *caseOfficer) OnMessage(agent any, msg *messaging.Message, src *messaging.Channel) {
+	c.handler.OnMessage(agent, msg, src)
+}
+
+// OnError - error notification event dispatch
+func (c *caseOfficer) OnError(agent any, status *core.Status) *core.Status {
+	return c.handler.OnError(agent, status)
+}
+
 // Add - add a shutdown function
 func (c *caseOfficer) Add(f func()) { c.shutdownFunc = messaging.AddShutdown(c.shutdownFunc, f) }
 
@@ -96,10 +109,6 @@ func (c *caseOfficer) Shutdown() {
 func (c *caseOfficer) IsFinalized() bool {
 	return c.emissary.IsFinalized() && c.ticker.IsFinalized()
 }
-
-func (c *caseOfficer) OnTick(agent any, src *messaging.Ticker)                             {}
-func (c *caseOfficer) OnMessage(agent any, msg *messaging.Message, src *messaging.Channel) {}
-func (c *caseOfficer) OnError(agent any, status *core.Status) *core.Status                 { return status }
 
 func (c *caseOfficer) startup() {
 	c.ticker.Start(-1)
