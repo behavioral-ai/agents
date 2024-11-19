@@ -61,9 +61,8 @@ func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 }
 
 // Trace - trace agent activity
-func (c *caseOfficer) Trace(agentId string, content any) {
-	// TODO : Any operations specific processing ??  If not then forward to handler
-	c.handler.Trace(agentId, content)
+func (c *caseOfficer) Trace(agent messaging.Agent, activity any) {
+	c.handler.Trace(agent, activity)
 }
 
 // OnTick - tick event dispatch

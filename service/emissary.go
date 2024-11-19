@@ -22,7 +22,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 			//			m := messaging.NewRightChannelMessage("", r.agentId, messaging.ObservationEvent, common1.NewObservation(actual, limit))
 			//			r.Message(m)
 			//			}
-			agent.handler.Trace(agent.Uri(), ticker)
+			agent.handler.Trace(agent, ticker)
 			agent.handler.OnTick(agent, ticker)
 		default:
 		}
