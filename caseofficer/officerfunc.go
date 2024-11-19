@@ -49,7 +49,7 @@ func initAgent(origin core.Origin, c *caseOfficer) {
 	agent = service.NewAgent(origin, c)
 	err = c.serviceAgents.Register(agent)
 	if err != nil {
-		c.handler.Handle(core.NewStatusError(core.StatusInvalidArgument, err))
+		c.handler.Notify(core.NewStatusError(core.StatusInvalidArgument, err))
 	} else {
 		agent.Run()
 	}

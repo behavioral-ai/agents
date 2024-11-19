@@ -54,16 +54,16 @@ func (c *caseOfficer) Uri() string { return c.agentId }
 // Message - message the agent
 func (c *caseOfficer) Message(m *messaging.Message) { c.emissary.C <- m }
 
-// Handle - error handler
-func (c *caseOfficer) Handle(status *core.Status) *core.Status {
+// Notify - notifier
+func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 	// TODO : do we need any processing specific to a case officer? If not then forward to handler
-	return c.handler.Handle(status)
+	return c.handler.Notify(status)
 }
 
-// AddActivity - add activity
-func (c *caseOfficer) AddActivity(agentId string, content any) {
+// Trace - trace agent activity
+func (c *caseOfficer) Trace(agentId string, content any) {
 	// TODO : Any operations specific processing ??  If not then forward to handler
-	c.handler.AddActivity(agentId, content)
+	c.handler.Trace(agentId, content)
 }
 
 // Add - add a shutdown function
@@ -75,7 +75,7 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend[messaging.MutedNotifier](c, officer, guidance.Guide, initAgent)
+	go emissaryAttend(c, officer, guidance.Guide, initAgent)
 }
 
 // Shutdown - shutdown the agent
@@ -97,11 +97,15 @@ func (c *caseOfficer) IsFinalized() bool {
 	return c.emissary.IsFinalized() && c.ticker.IsFinalized()
 }
 
+func (c *caseOfficer) OnTick(agent any, src *messaging.Ticker)                             {}
+func (c *caseOfficer) OnMessage(agent any, msg *messaging.Message, src *messaging.Channel) {}
+func (c *caseOfficer) OnError(agent any, status *core.Status) *core.Status                 { return status }
+
 func (c *caseOfficer) startup() {
 	c.ticker.Start(-1)
 }
 
-func (c *caseOfficer) shutdown() {
+func (c *caseOfficer) finalize() {
 	c.emissary.Close()
 	c.ticker.Stop()
 }

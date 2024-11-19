@@ -76,8 +76,8 @@ func (s *service) Run() {
 	if s.running {
 		return
 	}
-	go masterAttend[messaging.MutedNotifier](s)
-	go emissaryAttend[messaging.MutedNotifier](s, common.Observe)
+	go masterAttend(s)
+	go emissaryAttend(s, common.Observe)
 	s.running = true
 }
 
@@ -99,4 +99,12 @@ func (s *service) Shutdown() {
 
 func (s *service) IsFinalized() bool {
 	return s.emissary.IsFinalized() && s.master.IsFinalized()
+}
+
+func (s *service) emissaryFinalize() {
+	s.emissary.Close()
+}
+
+func (s *service) masterFinalize() {
+	s.master.Close()
 }

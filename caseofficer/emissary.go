@@ -8,18 +8,16 @@ import (
 
 type newServiceAgent func(origin core.Origin, c *caseOfficer)
 
-func emissaryAttend[T messaging.Notifier](agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidance, newAgent newServiceAgent) {
-	var notify T
-
+func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidance, newAgent newServiceAgent) {
 	fn.startup(agent, guide, newAgent)
 
 	for {
 		// new assignment processing
 		select {
 		case <-agent.ticker.C():
-			agent.handler.AddActivity(agent.Uri(), "onTick()")
+			agent.Trace(agent.Uri(), "onTick()")
 			fn.update(agent, guide, newAgent)
-			notify.OnTick(agent, agent.ticker)
+			agent.OnTick(agent, agent.ticker)
 		default:
 		}
 		// control channel processing
@@ -27,17 +25,18 @@ func emissaryAttend[T messaging.Notifier](agent *caseOfficer, fn *caseOfficerFun
 		case msg := <-agent.emissary.C:
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
-				agent.shutdown()
-				agent.handler.AddActivity(agent.Uri(), messaging.ShutdownEvent)
-				notify.OnMessage(agent, msg, agent.emissary)
+				agent.finalize()
+				agent.Trace(agent.Uri(), msg)
+				agent.OnMessage(agent, msg, agent.emissary)
 				return
 			case messaging.DataChangeEvent:
 				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					agent.serviceAgents.Broadcast(msg)
 				}
-				notify.OnMessage(agent, msg, agent.emissary)
+				agent.Trace(agent.Uri(), msg)
+				agent.OnMessage(agent, msg, agent.emissary)
 			default:
-				notify.OnError(agent, agent.handler.Handle(MessageEventErrorStatus(agent.Uri(), msg)))
+				agent.OnError(agent, agent.Notify(MessageEventErrorStatus(agent.Uri(), msg)))
 			}
 		default:
 		}

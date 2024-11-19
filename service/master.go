@@ -6,9 +6,7 @@ import (
 )
 
 // master attention
-func masterAttend[T messaging.Notifier](agent *service) {
-	var notify T
-
+func masterAttend(agent *service) {
 	//rateLimiting := action1.NewRateLimiting()
 	//common1.SetRateLimitingAction(r.handler, r.origin, rateLimiting, exp)
 
@@ -18,12 +16,12 @@ func masterAttend[T messaging.Notifier](agent *service) {
 		case msg := <-agent.master.C:
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
-				agent.master.Close()
-				agent.handler.AddActivity(agent.Uri(), messaging.ShutdownEvent)
-				notify.OnMessage(agent, msg, agent.master)
+				agent.masterFinalize()
+				agent.handler.Trace(agent.Uri(), messaging.ShutdownEvent)
+				agent.handler.OnMessage(agent, msg, agent.master)
 				return
 			case messaging.ObservationEvent:
-				agent.handler.AddActivity(agent.Uri(), messaging.ObservationEvent)
+				agent.handler.Trace(agent.Uri(), messaging.ObservationEvent)
 				/*
 					observe, ok := msg.Body.(*common1.Observation)
 					if !ok {
@@ -39,9 +37,9 @@ func masterAttend[T messaging.Notifier](agent *service) {
 					common1.AddRateLimitingExperience(r.handler, r.origin, inf, action, exp)
 
 				*/
-				notify.OnMessage(agent, msg, agent.master)
+				agent.handler.OnMessage(agent, msg, agent.master)
 			default:
-				notify.OnError(agent, agent.handler.Handle(common.MessageEventErrorStatus(agent.Uri(), msg)))
+				agent.handler.OnError(agent, agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg)))
 			}
 		default:
 		}
