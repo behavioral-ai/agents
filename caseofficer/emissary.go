@@ -32,7 +32,7 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 					agent.serviceAgents.Broadcast(msg)
 				}
 			default:
-				agent.Notify(MessageEventErrorStatus(agent.Uri(), msg))
+				agent.Notify(agent, MessageEventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}
