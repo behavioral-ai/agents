@@ -17,29 +17,28 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 		// observation processing
 		select {
 		case <-ticker.C():
+			agent.handler.OnTick(agent, ticker)
 			//		actual, status := observe.PercentThresholdQuery(r.handler, r.origin, time.Now().UTC(), time.Now().UTC())
 			//		if status.OK() {
 			//			m := messaging.NewRightChannelMessage("", r.agentId, messaging.ObservationEvent, common1.NewObservation(actual, limit))
 			//			r.Message(m)
 			//			}
-			agent.handler.OnTick(agent, ticker)
 		default:
 		}
 		// message processing
 		select {
 		case msg := <-agent.emissary.C:
+			agent.handler.OnMessage(agent, msg, agent.emissary)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				ticker.Stop()
 				agent.emissaryFinalize()
-				agent.handler.OnMessage(agent, msg, agent.emissary)
 				return
 			case messaging.DataChangeEvent:
 				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
 				}
-				agent.handler.OnMessage(agent, msg, agent.emissary)
 			default:
-				agent.handler.OnError(agent, agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg)))
+				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}

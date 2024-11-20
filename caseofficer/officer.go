@@ -60,11 +60,6 @@ func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 	return c.handler.Notify(status)
 }
 
-// Trace - trace agent activity
-func (c *caseOfficer) Trace(agent messaging.Agent, activity any) {
-	c.handler.Trace(agent, activity)
-}
-
 // OnTick - tick event dispatch
 func (c *caseOfficer) OnTick(agent any, src *messaging.Ticker) { c.handler.OnTick(agent, src) }
 
@@ -73,10 +68,8 @@ func (c *caseOfficer) OnMessage(agent any, msg *messaging.Message, src *messagin
 	c.handler.OnMessage(agent, msg, src)
 }
 
-// OnError - error notification event dispatch
-func (c *caseOfficer) OnError(agent any, status *core.Status) *core.Status {
-	return c.handler.OnError(agent, status)
-}
+// OnTrace - trac event dispatch
+func (c *caseOfficer) OnTrace(agent any, activity any) { c.handler.OnTrace(agent, activity) }
 
 // Add - add a shutdown function
 func (c *caseOfficer) Add(f func()) { c.shutdownFunc = messaging.AddShutdown(c.shutdownFunc, f) }

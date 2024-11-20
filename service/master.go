@@ -14,10 +14,10 @@ func masterAttend(agent *service) {
 		// message processing
 		select {
 		case msg := <-agent.master.C:
+			agent.handler.OnMessage(agent, msg, agent.master)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.masterFinalize()
-				agent.handler.OnMessage(agent, msg, agent.master)
 				return
 			case messaging.ObservationEvent:
 				/*
@@ -35,9 +35,8 @@ func masterAttend(agent *service) {
 					common1.AddRateLimitingExperience(r.handler, r.origin, inf, action, exp)
 
 				*/
-				agent.handler.OnMessage(agent, msg, agent.master)
 			default:
-				agent.handler.OnError(agent, agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg)))
+				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}

@@ -6,6 +6,8 @@ github.com/advanced-go/common v0.0.0-20241119122947-058acf134a42 h1:wwELePpUO9Uw
 github.com/advanced-go/common v0.0.0-20241119122947-058acf134a42/go.mod h1:ZO9q9c1GB9gQOeuWiAk0fT7pH8nfmNarGHi/Qu4LP/Q=
 github.com/advanced-go/common v0.0.0-20241119124720-55426494362a h1:VnTVmVrEtnzF90BJrID3Oek5jOKarV6H7v38zRwO3bc=
 github.com/advanced-go/common v0.0.0-20241119124720-55426494362a/go.mod h1:ZO9q9c1GB9gQOeuWiAk0fT7pH8nfmNarGHi/Qu4LP/Q=
+github.com/advanced-go/common v0.0.0-20241120121855-6d8055728334 h1:j2XqjalMyrNL8oHQimgmn4L2rVIjtqP9Ga28lYDppF8=
+github.com/advanced-go/common v0.0.0-20241120121855-6d8055728334/go.mod h1:ZO9q9c1GB9gQOeuWiAk0fT7pH8nfmNarGHi/Qu4LP/Q=
 github.com/advanced-go/log v0.0.0-20241114210224-f5157780c204 h1:n4OFEy2bYrBZUAQa37x+rNr8lhh6oLtl1wpTFWZIj5o=
 github.com/advanced-go/log v0.0.0-20241114210224-f5157780c204/go.mod h1:5Xg63AfI0Qe4fdvgvcilsmyfPoqz2d6ygiNrrFGFYjM=
 github.com/advanced-go/resiliency v0.0.0-20241119111956-db601e727c39 h1:d3yuoMXaNCiIdWgfAyQCfntN81fp8QA8LY0cEit3s2Y=
@@ -16,5 +18,7 @@ github.com/advanced-go/resiliency v0.0.0-20241119123348-a8b50eb807e0 h1:6huy9GqM
 github.com/advanced-go/resiliency v0.0.0-20241119123348-a8b50eb807e0/go.mod h1:IfJIOWSjlLY0+/Uqgqjjd3PcFSZTEHs/ybnRANlfnfs=
 github.com/advanced-go/resiliency v0.0.0-20241119124808-330fba87df4c h1:AWoI7Ld9/+lsfe6R9jf5JU1946P1jzgSJU1c1TAK5Wo=
 github.com/advanced-go/resiliency v0.0.0-20241119124808-330fba87df4c/go.mod h1:uqOkzUCSi0+i3Ym5wO1Ah9fMP/S8Xe/Pwvkym96g8Gg=
+github.com/advanced-go/resiliency v0.0.0-20241120122623-d0ae87806194 h1:Wt5jaSTF/JrFJuas7xkOZlEiKgrXsxucD25KN5Qoy7c=
+github.com/advanced-go/resiliency v0.0.0-20241120122623-d0ae87806194/go.mod h1:fb2p9237kHVrHFfaICCc89QIkxLFaFshgg6bjOZxDbE=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

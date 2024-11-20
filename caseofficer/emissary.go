@@ -22,18 +22,17 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 		// control channel processing
 		select {
 		case msg := <-agent.emissary.C:
+			agent.OnMessage(agent, msg, agent.emissary)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.finalize()
-				agent.OnMessage(agent, msg, agent.emissary)
 				return
 			case messaging.DataChangeEvent:
 				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					agent.serviceAgents.Broadcast(msg)
 				}
-				agent.OnMessage(agent, msg, agent.emissary)
 			default:
-				agent.OnError(agent, agent.Notify(MessageEventErrorStatus(agent.Uri(), msg)))
+				agent.Notify(MessageEventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}
