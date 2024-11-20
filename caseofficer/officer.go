@@ -55,9 +55,9 @@ func (c *caseOfficer) Uri() string { return c.agentId }
 func (c *caseOfficer) Message(m *messaging.Message) { c.emissary.C <- m }
 
 // Notify - notifier
-func (c *caseOfficer) Notify(agent any, status *core.Status) *core.Status {
+func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 	// TODO : do we need any processing specific to a case officer? If not then forward to handler
-	return c.handler.Notify(agent, status)
+	return c.handler.Notify(status)
 }
 
 // OnTick - tick event dispatch

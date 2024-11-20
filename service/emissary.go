@@ -38,7 +38,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
 				}
 			default:
-				agent.handler.Notify(agent, common.MessageEventErrorStatus(agent.Uri(), msg))
+				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}

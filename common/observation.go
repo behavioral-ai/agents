@@ -24,7 +24,7 @@ var Observe = func() *Observation {
 			defer cancel()
 			e, status := timeseries.Query(ctx, origin)
 			if !status.OK() && !status.NotFound() {
-				h.Notify(nil, status)
+				h.Notify(status)
 			}
 			return e, status
 		},
