@@ -72,7 +72,9 @@ func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 }
 
 // Trace - activity tracing
-func (c *caseOfficer) Trace(agent, activity any) { c.handler.Trace(agent, activity) }
+func (c *caseOfficer) Trace(agent messaging.Agent, event, activity string) {
+	c.handler.Trace(agent, event, activity)
+}
 
 // Add - add a shutdown function
 func (c *caseOfficer) Add(f func()) { c.shutdownFunc = messaging.AddShutdown(c.shutdownFunc, f) }
