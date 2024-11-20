@@ -22,6 +22,12 @@ type caseOfficer struct {
 	handler       messaging.OpsAgent
 	serviceAgents *messaging.Exchange
 	shutdownFunc  func()
+
+	// testing/debugging
+	onMessage       func(agent any, msg *messaging.Message, ch *messaging.Channel)
+	onTick          func(agent any, ticker *messaging.Ticker)
+	preStateChange  func()
+	postStateChange func()
 }
 
 func AgentUri(origin core.Origin) string {
@@ -42,6 +48,11 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent) *caseOfficer {
 	c.emissary = messaging.NewEmissaryChannel(true)
 	c.handler = handler
 	c.serviceAgents = messaging.NewExchange()
+
+	c.onMessage = func(agent any, msg *messaging.Message, src *messaging.Channel) {}
+	c.onTick = func(agent any, ticker *messaging.Ticker) {}
+	c.preStateChange = func() {}
+	c.postStateChange = func() {}
 	return c
 }
 
@@ -60,16 +71,8 @@ func (c *caseOfficer) Notify(status *core.Status) *core.Status {
 	return c.handler.Notify(status)
 }
 
-// OnTick - tick event dispatch
-func (c *caseOfficer) OnTick(agent any, src *messaging.Ticker) { c.handler.OnTick(agent, src) }
-
-// OnMessage - message receive event dispatch
-func (c *caseOfficer) OnMessage(agent any, msg *messaging.Message, src *messaging.Channel) {
-	c.handler.OnMessage(agent, msg, src)
-}
-
-// OnTrace - trac event dispatch
-func (c *caseOfficer) OnTrace(agent any, activity any) { c.handler.OnTrace(agent, activity) }
+// Trace - activity tracing
+func (c *caseOfficer) Trace(agent, activity any) { c.handler.Trace(agent, activity) }
 
 // Add - add a shutdown function
 func (c *caseOfficer) Add(f func()) { c.shutdownFunc = messaging.AddShutdown(c.shutdownFunc, f) }

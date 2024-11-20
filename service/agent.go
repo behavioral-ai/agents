@@ -18,12 +18,16 @@ type service struct {
 	origin  core.Origin
 
 	// Channels
-	duration time.Duration
-	emissary *messaging.Channel
-	master   *messaging.Channel
-
+	duration     time.Duration
+	emissary     *messaging.Channel
+	master       *messaging.Channel
 	handler      messaging.OpsAgent
 	shutdownFunc func()
+
+	onMessage       func(agent any, msg *messaging.Message, src *messaging.Channel)
+	onTick          func(agent any, ticker *messaging.Ticker)
+	preStateChange  func()
+	postStateChange func()
 }
 
 func serviceAgentUri(origin core.Origin) string {
@@ -44,8 +48,12 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent) *service {
 	// Channels
 	r.emissary = messaging.NewEmissaryChannel(true)
 	r.master = messaging.NewMasterChannel(true)
-
 	r.handler = handler
+
+	r.onMessage = func(agent any, msg *messaging.Message, src *messaging.Channel) {}
+	r.onTick = func(agent any, ticker *messaging.Ticker) {}
+	r.preStateChange = func() {}
+	r.postStateChange = func() {}
 	return r
 }
 

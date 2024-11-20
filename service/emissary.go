@@ -17,7 +17,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 		// observation processing
 		select {
 		case <-ticker.C():
-			agent.handler.OnTick(agent, ticker)
+			agent.onTick(agent, ticker)
 			//		actual, status := observe.PercentThresholdQuery(r.handler, r.origin, time.Now().UTC(), time.Now().UTC())
 			//		if status.OK() {
 			//			m := messaging.NewRightChannelMessage("", r.agentId, messaging.ObservationEvent, common1.NewObservation(actual, limit))
@@ -28,7 +28,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 		// message processing
 		select {
 		case msg := <-agent.emissary.C:
-			agent.handler.OnMessage(agent, msg, agent.emissary)
+			agent.onMessage(agent, msg, agent.emissary)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				ticker.Stop()

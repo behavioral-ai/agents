@@ -14,7 +14,7 @@ func masterAttend(agent *service) {
 		// message processing
 		select {
 		case msg := <-agent.master.C:
-			agent.handler.OnMessage(agent, msg, agent.master)
+			agent.onMessage(agent, msg, agent.master)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.masterFinalize()

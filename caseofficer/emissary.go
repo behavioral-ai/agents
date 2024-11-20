@@ -15,14 +15,15 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 		// new assignment processing
 		select {
 		case <-agent.ticker.C():
+			agent.onTick(agent, agent.ticker)
 			fn.update(agent, guide, newAgent)
-			agent.OnTick(agent, agent.ticker)
+
 		default:
 		}
 		// control channel processing
 		select {
 		case msg := <-agent.emissary.C:
-			agent.OnMessage(agent, msg, agent.emissary)
+			agent.onMessage(agent, msg, agent.emissary)
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.finalize()
