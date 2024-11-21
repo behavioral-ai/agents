@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	shutdownMsg   = messaging.NewControlMessage("", "", messaging.ShutdownEvent)
-	dataChangeMsg = messaging.NewControlMessage("", "", messaging.DataChangeEvent)
+	emissaryShutdownMsg = messaging.NewLeftChannelMessage("", "", messaging.ShutdownEvent, nil)
+	dataChangeMsg       = messaging.NewControlMessage("", "", messaging.DataChangeEvent)
 )
 
 func init() {
@@ -24,7 +24,7 @@ func ExampleEmissary() {
 	go func() {
 		go emissaryAttend(agent, nil)
 		//agent.Message(dataChangeMsg)
-		agent.Message(shutdownMsg)
+		agent.Message(emissaryShutdownMsg)
 		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.isFinalizedEmissary())
 		ch <- struct{}{}
 	}()

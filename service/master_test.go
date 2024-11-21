@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	observationMsg = messaging.NewControlMessage("", "", messaging.ObservationEvent)
+	masterShutdownMsg = messaging.NewRightChannelMessage("", "", messaging.ShutdownEvent, nil)
+	observationMsg    = messaging.NewControlMessage("", "", messaging.ObservationEvent)
 )
 
 func ExampleMaster() {
@@ -18,7 +19,7 @@ func ExampleMaster() {
 	go func() {
 		go masterAttend(agent)
 		//agent.Message(observationMsg)
-		agent.Message(shutdownMsg)
+		agent.Message(masterShutdownMsg)
 		fmt.Printf("test: masterAttend() -> [finalized:%v]\n", agent.isFinalizedMaster())
 		ch <- struct{}{}
 	}()
