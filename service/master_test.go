@@ -9,16 +9,16 @@ import (
 
 var (
 	masterShutdown = messaging.NewControlMessage(messaging.MasterChannel, "", messaging.ShutdownEvent)
-	observation    = messaging.NewControlMessage("", "", messaging.ObservationEvent)
+	observation    = messaging.NewControlMessage(messaging.MasterChannel, "", messaging.ObservationEvent)
 )
 
 func ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
+	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestMasterDispatcher(), newTestEmissaryDispatcher())
 
 	go func() {
 		go masterAttend(agent)
-		//agent.Message(observationMsg)
+		//agent.Message(observation)
 		agent.Message(masterShutdown)
 		fmt.Printf("test: masterAttend() -> [finalized:%v]\n", agent.isFinalizedMaster())
 		ch <- struct{}{}

@@ -5,19 +5,35 @@ import (
 	"github.com/advanced-go/common/messaging"
 )
 
-type dispatchT struct{}
+type masterT struct{}
 
-func newTestDispatcher() dispatcher {
-	d := new(dispatchT)
+func newTestMasterDispatcher() dispatcher {
+	d := new(masterT)
 	return d
 }
 
-func (d *dispatchT) setup(_ *service, _ string) {}
+func (d *masterT) setup(_ *service, _ string) {}
 
-func (d *dispatchT) dispatch(agent *service, event string) {
+func (d *masterT) dispatch(agent *service, event string) {
 	switch event {
 	case messaging.DataChangeEvent:
-		agent.handler.Trace(agent, event, "Broadcast() -> calendar data change event")
+		agent.handler.Trace(agent, messaging.MasterChannel, event, "Broadcast() -> calendar data change event")
+	}
+}
+
+type emissaryT struct{}
+
+func newTestEmissaryDispatcher() dispatcher {
+	d := new(emissaryT)
+	return d
+}
+
+func (d *emissaryT) setup(_ *service, _ string) {}
+
+func (d *emissaryT) dispatch(agent *service, event string) {
+	switch event {
+	case messaging.DataChangeEvent:
+		agent.handler.Trace(agent, messaging.EmissaryChannel, event, "Broadcast() -> calendar data change event")
 	}
 }
 

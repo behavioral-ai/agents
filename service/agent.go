@@ -17,11 +17,12 @@ type service struct {
 	agentId string
 	origin  core.Origin
 
-	duration time.Duration
-	emissary *messaging.Channel
-	master   *messaging.Channel
-	handler  messaging.OpsAgent
-	sender   dispatcher
+	duration       time.Duration
+	emissary       *messaging.Channel
+	master         *messaging.Channel
+	handler        messaging.OpsAgent
+	masterSender   dispatcher
+	emissarySender dispatcher
 }
 
 func serviceAgentUri(origin core.Origin) string {
@@ -30,10 +31,10 @@ func serviceAgentUri(origin core.Origin) string {
 
 // NewAgent - create a new service agent
 func NewAgent(origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
-	return newAgent(origin, handler, newDispatcher())
+	return newAgent(origin, handler, newMasterDispatcher(), newEmissaryDispatcher())
 }
 
-func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher) *service {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, master, emissary dispatcher) *service {
 	r := new(service)
 	r.origin = origin
 	r.agentId = serviceAgentUri(origin)
@@ -42,7 +43,8 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher)
 	r.emissary = messaging.NewEmissaryChannel(true)
 	r.master = messaging.NewMasterChannel(true)
 	r.handler = handler
-	r.sender = sender
+	r.masterSender = master
+	r.emissarySender = emissary
 	return r
 }
 
@@ -110,10 +112,18 @@ func (s *service) masterFinalize() {
 	s.master.Close()
 }
 
-func (s *service) setup(event string) {
-	s.sender.setup(s, event)
+func (s *service) emissarySetup(event string) {
+	s.emissarySender.setup(s, event)
 }
 
-func (s *service) dispatch(event string) {
-	s.sender.dispatch(s, event)
+func (s *service) emissaryDispatch(event string) {
+	s.emissarySender.dispatch(s, event)
+}
+
+func (s *service) masterSetup(event string) {
+	s.masterSender.setup(s, event)
+}
+
+func (s *service) masterDispatch(event string) {
+	s.masterSender.dispatch(s, event)
 }

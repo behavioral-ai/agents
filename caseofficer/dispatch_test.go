@@ -12,12 +12,12 @@ func newTestDispatcher() dispatcher {
 	return d
 }
 
-func (d *dispatchT) setup(_ *caseOfficer, _ string) {}
+func (d *dispatchT) setup(_ *caseOfficer, _, _ string) {}
 
-func (d *dispatchT) dispatch(agent *caseOfficer, event string) {
+func (d *dispatchT) dispatch(agent *caseOfficer, channel, event string) {
 	switch event {
 	case messaging.DataChangeEvent:
-		agent.handler.Trace(agent, event, "Broadcast() -> calendar data change event")
+		agent.handler.Trace(agent, channel, event, "Broadcast() -> calendar data change event")
 	}
 }
 

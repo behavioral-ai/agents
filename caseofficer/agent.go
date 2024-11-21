@@ -64,8 +64,8 @@ func (c *caseOfficer) Message(m *messaging.Message) {
 func (c *caseOfficer) Notify(status *core.Status) *core.Status { return c.handler.Notify(status) }
 
 // Trace - activity tracing
-func (c *caseOfficer) Trace(agent messaging.Agent, event, activity string) {
-	c.handler.Trace(agent, event, activity)
+func (c *caseOfficer) Trace(agent messaging.Agent, channel, event, activity string) {
+	c.handler.Trace(agent, channel, event, activity)
 }
 
 // Run - run the agent
@@ -107,9 +107,9 @@ func (c *caseOfficer) reviseTicker(newDuration time.Duration) {
 }
 
 func (c *caseOfficer) setup(event string) {
-	c.sender.setup(c, event)
+	c.sender.setup(c, messaging.EmissaryChannel, event)
 }
 
-func (c *caseOfficer) dispatch(event string) {
-	c.sender.dispatch(c, event)
+func (c *caseOfficer) dispatch(channel, event string) {
+	c.sender.dispatch(c, messaging.EmissaryChannel, event)
 }

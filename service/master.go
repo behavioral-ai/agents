@@ -7,17 +7,17 @@ import (
 
 // master attention
 func masterAttend(agent *service) {
-	agent.dispatch(messaging.StartupEvent)
+	agent.masterDispatch(messaging.StartupEvent)
 
 	for {
 		// message processing
 		select {
 		case msg := <-agent.master.C:
-			agent.setup(msg.Event())
+			agent.masterSetup(msg.Event())
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.masterFinalize()
-				agent.dispatch(msg.Event())
+				agent.masterDispatch(msg.Event())
 				return
 			case messaging.ObservationEvent:
 				/*
@@ -35,7 +35,7 @@ func masterAttend(agent *service) {
 					common1.AddRateLimitingExperience(r.handler, r.origin, inf, action, exp)
 
 				*/
-				agent.dispatch(msg.Event())
+				agent.masterDispatch(msg.Event())
 			default:
 				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
 			}

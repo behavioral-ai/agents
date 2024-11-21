@@ -8,14 +8,14 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *service, observe *common.Observation) {
-	agent.dispatch(messaging.StartupEvent)
+	agent.emissaryDispatch(messaging.StartupEvent)
 	ticker := messaging.NewPrimaryTicker(agent.duration)
 
 	ticker.Start(-1)
 	for {
 		select {
 		case <-ticker.C():
-			agent.dispatch("event:onTick")
+			agent.emissaryDispatch("event:onTick")
 			//agent.onTick(agent, ticker)
 			//		actual, status := observe.PercentThresholdQuery(r.handler, r.origin, time.Now().UTC(), time.Now().UTC())
 			//		if status.OK() {
@@ -26,16 +26,16 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 		}
 		select {
 		case msg := <-agent.emissary.C:
-			agent.setup(msg.Event())
+			agent.emissarySetup(msg.Event())
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				ticker.Stop()
 				agent.emissaryFinalize()
-				agent.dispatch(msg.Event())
+				agent.emissaryDispatch(msg.Event())
 				return
 			case messaging.DataChangeEvent:
 				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
-					agent.dispatch(msg.Event())
+					agent.emissaryDispatch(msg.Event())
 				}
 			default:
 				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))

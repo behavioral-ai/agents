@@ -15,7 +15,7 @@ var (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
+	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestMasterDispatcher(), newTestEmissaryDispatcher())
 	dataChange.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
 
 	go func() {
@@ -29,7 +29,7 @@ func ExampleEmissary() {
 	close(ch)
 
 	//Output:
-	//test: Trace() -> service:us-west.. : event:data-change Broadcast() -> calendar data change event]
+	//test: Trace() -> service:us-west.. : emissary event:data-change Broadcast() -> calendar data change event]
 	//test: emissaryAttend() -> [finalized:true]
 
 }
