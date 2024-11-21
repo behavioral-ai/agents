@@ -1,4 +1,4 @@
-package service
+package caseofficer
 
 import (
 	"fmt"
@@ -22,10 +22,10 @@ func ExampleEmissary() {
 	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
 
 	go func() {
-		go emissaryAttend(agent, nil)
+		go emissaryAttend(agent, nil, nil, nil)
 		//agent.Message(dataChangeMsg)
 		agent.Message(shutdownMsg)
-		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.isFinalizedEmissary())
+		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.IsFinalized())
 		ch <- struct{}{}
 	}()
 	<-ch

@@ -9,28 +9,30 @@ import (
 type newServiceAgent func(origin core.Origin, c *caseOfficer)
 
 func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidance, newAgent newServiceAgent) {
-	fn.startup(agent, guide, newAgent)
+	agent.dispatch(messaging.StartupEvent)
+	//fn.startup(agent, guide, newAgent)
 
 	for {
 		// new assignment processing
 		select {
 		case <-agent.ticker.C():
-			agent.onTick(agent, agent.ticker)
-			fn.update(agent, guide, newAgent)
+			//fn.update(agent, guide, newAgent)
 
 		default:
 		}
 		// control channel processing
 		select {
 		case msg := <-agent.emissary.C:
-			agent.onMessage(agent, msg, agent.emissary)
+			agent.setup(msg.Event())
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				agent.finalize()
+				agent.dispatch(msg.Event())
 				return
 			case messaging.DataChangeEvent:
 				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					agent.serviceAgents.Broadcast(msg)
+					agent.dispatch(msg.Event())
 				}
 			default:
 				agent.Notify(MessageEventErrorStatus(agent.Uri(), msg))

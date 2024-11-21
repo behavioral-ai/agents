@@ -17,17 +17,11 @@ type service struct {
 	agentId string
 	origin  core.Origin
 
-	// Channels
-	duration     time.Duration
-	emissary     *messaging.Channel
-	master       *messaging.Channel
-	handler      messaging.OpsAgent
-	shutdownFunc func()
-
-	onMessage       func(agent any, msg *messaging.Message, src *messaging.Channel)
-	onTick          func(agent any, ticker *messaging.Ticker)
-	preStateChange  func()
-	postStateChange func()
+	duration time.Duration
+	emissary *messaging.Channel
+	master   *messaging.Channel
+	handler  messaging.OpsAgent
+	sender   dispatcher
 }
 
 func serviceAgentUri(origin core.Origin) string {
@@ -36,24 +30,19 @@ func serviceAgentUri(origin core.Origin) string {
 
 // NewAgent - create a new service agent
 func NewAgent(origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
-	return newAgent(origin, handler)
+	return newAgent(origin, handler, newDispatcher())
 }
 
-func newAgent(origin core.Origin, handler messaging.OpsAgent) *service {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher) *service {
 	r := new(service)
 	r.origin = origin
 	r.agentId = serviceAgentUri(origin)
 	r.duration = defaultDuration
 
-	// Channels
 	r.emissary = messaging.NewEmissaryChannel(true)
 	r.master = messaging.NewMasterChannel(true)
 	r.handler = handler
-
-	r.onMessage = func(agent any, msg *messaging.Message, src *messaging.Channel) {}
-	r.onTick = func(agent any, ticker *messaging.Ticker) {}
-	r.preStateChange = func() {}
-	r.postStateChange = func() {}
+	r.sender = sender
 	return r
 }
 
@@ -76,9 +65,6 @@ func (s *service) Message(m *messaging.Message) {
 	}
 }
 
-// Add - add a shutdown function
-func (s *service) Add(f func()) { s.shutdownFunc = messaging.AddShutdown(s.shutdownFunc, f) }
-
 // Run - run the agent
 func (s *service) Run() {
 	if s.running {
@@ -95,10 +81,7 @@ func (s *service) Shutdown() {
 		return
 	}
 	s.running = false
-	if s.shutdownFunc != nil {
-		s.shutdownFunc()
-	}
-	msg := messaging.NewControlMessage(s.agentId, s.agentId, messaging.ShutdownEvent)
+	msg := messaging.NewControlMessage(s.Uri(), s.Uri(), messaging.ShutdownEvent)
 	s.emissary.Enable()
 	s.emissary.C <- msg
 	s.master.Enable()
@@ -109,10 +92,26 @@ func (s *service) IsFinalized() bool {
 	return s.emissary.IsFinalized() && s.master.IsFinalized()
 }
 
+func (s *service) isFinalizedEmissary() bool {
+	return s.emissary.IsFinalized()
+}
+
 func (s *service) emissaryFinalize() {
 	s.emissary.Close()
 }
 
+func (s *service) isFinalizedMaster() bool {
+	return s.master.IsFinalized()
+}
+
 func (s *service) masterFinalize() {
 	s.master.Close()
+}
+
+func (s *service) setup(event string) {
+	s.sender.setup(s, event)
+}
+
+func (s *service) dispatch(event string) {
+	s.sender.dispatch(s, event)
 }

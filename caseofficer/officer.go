@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	CaseOfficerClass   = "case-officer"
+	Class              = "case-officer"
 	assignmentDuration = time.Minute * 30
 )
 
@@ -19,28 +19,22 @@ type caseOfficer struct {
 
 	ticker        *messaging.Ticker
 	emissary      *messaging.Channel
-	handler       messaging.OpsAgent
 	serviceAgents *messaging.Exchange
-	shutdownFunc  func()
-
-	// testing/debugging
-	onMessage       func(agent any, msg *messaging.Message, ch *messaging.Channel)
-	onTick          func(agent any, ticker *messaging.Ticker)
-	preStateChange  func()
-	postStateChange func()
+	handler       messaging.OpsAgent
+	sender        dispatcher
 }
 
 func AgentUri(origin core.Origin) string {
-	return origin.Uri(CaseOfficerClass)
+	return origin.Uri(Class)
 }
 
 // NewAgent - create a new case officer agent
 func NewAgent(origin core.Origin, handler messaging.OpsAgent) messaging.OpsAgent {
-	return newAgent(origin, handler)
+	return newAgent(origin, handler, newDispatcher())
 }
 
 // newAgent - create a new case officer agent
-func newAgent(origin core.Origin, handler messaging.OpsAgent) *caseOfficer {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher) *caseOfficer {
 	c := new(caseOfficer)
 	c.agentId = AgentUri(origin)
 	c.origin = origin
@@ -48,11 +42,7 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent) *caseOfficer {
 	c.emissary = messaging.NewEmissaryChannel(true)
 	c.handler = handler
 	c.serviceAgents = messaging.NewExchange()
-
-	c.onMessage = func(agent any, msg *messaging.Message, src *messaging.Channel) {}
-	c.onTick = func(agent any, ticker *messaging.Ticker) {}
-	c.preStateChange = func() {}
-	c.postStateChange = func() {}
+	c.sender = sender
 	return c
 }
 
@@ -66,18 +56,12 @@ func (c *caseOfficer) Uri() string { return c.agentId }
 func (c *caseOfficer) Message(m *messaging.Message) { c.emissary.C <- m }
 
 // Notify - notifier
-func (c *caseOfficer) Notify(status *core.Status) *core.Status {
-	// TODO : do we need any processing specific to a case officer? If not then forward to handler
-	return c.handler.Notify(status)
-}
+func (c *caseOfficer) Notify(status *core.Status) *core.Status { return c.handler.Notify(status) }
 
 // Trace - activity tracing
 func (c *caseOfficer) Trace(agent messaging.Agent, event, activity string) {
 	c.handler.Trace(agent, event, activity)
 }
-
-// Add - add a shutdown function
-func (c *caseOfficer) Add(f func()) { c.shutdownFunc = messaging.AddShutdown(c.shutdownFunc, f) }
 
 // Run - run the agent
 func (c *caseOfficer) Run() {
@@ -94,17 +78,13 @@ func (c *caseOfficer) Shutdown() {
 		return
 	}
 	c.running = false
-	// Removes agent from its exchange if registered
-	if c.shutdownFunc != nil {
-		c.shutdownFunc()
-	}
-	msg := messaging.NewControlMessage(c.agentId, c.agentId, messaging.ShutdownEvent)
+	msg := messaging.NewControlMessage(c.Uri(), c.Uri(), messaging.ShutdownEvent)
 	c.serviceAgents.Shutdown()
 	c.emissary.C <- msg
 }
 
 func (c *caseOfficer) IsFinalized() bool {
-	return c.emissary.IsFinalized() && c.ticker.IsFinalized()
+	return c.emissary.IsFinalized() && c.ticker.IsFinalized() && c.serviceAgents.IsFinalized()
 }
 
 func (c *caseOfficer) startup() {
@@ -114,8 +94,17 @@ func (c *caseOfficer) startup() {
 func (c *caseOfficer) finalize() {
 	c.emissary.Close()
 	c.ticker.Stop()
+	c.serviceAgents.Shutdown()
 }
 
 func (c *caseOfficer) reviseTicker(newDuration time.Duration) {
 	c.ticker.Start(newDuration)
+}
+
+func (c *caseOfficer) setup(event string) {
+	c.sender.setup(c, event)
+}
+
+func (c *caseOfficer) dispatch(event string) {
+	c.sender.dispatch(c, event)
 }
