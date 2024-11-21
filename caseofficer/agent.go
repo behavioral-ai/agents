@@ -53,7 +53,12 @@ func (c *caseOfficer) String() string { return c.Uri() }
 func (c *caseOfficer) Uri() string { return c.agentId }
 
 // Message - message the agent
-func (c *caseOfficer) Message(m *messaging.Message) { c.emissary.C <- m }
+func (c *caseOfficer) Message(m *messaging.Message) {
+	if m == nil {
+		return
+	}
+	c.emissary.C <- m
+}
 
 // Notify - notifier
 func (c *caseOfficer) Notify(status *core.Status) *core.Status { return c.handler.Notify(status) }

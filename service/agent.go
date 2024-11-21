@@ -57,11 +57,13 @@ func (s *service) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	// Specifically for the lhc or profile content
-	if m.Channel() == messaging.ChannelLeft {
+	switch m.To() {
+	case messaging.EmissaryChannel:
 		s.emissary.C <- m
-	} else {
+	case messaging.MasterChannel:
 		s.master.C <- m
+	default:
+		s.emissary.C <- m
 	}
 }
 

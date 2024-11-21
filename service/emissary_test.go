@@ -9,22 +9,19 @@ import (
 )
 
 var (
-	emissaryShutdownMsg = messaging.NewLeftChannelMessage("", "", messaging.ShutdownEvent, nil)
-	dataChangeMsg       = messaging.NewControlMessage("", "", messaging.DataChangeEvent)
+	emissaryShutdown = messaging.NewControlMessage(messaging.EmissaryChannel, "", messaging.ShutdownEvent)
+	dataChange       = messaging.NewControlMessageWithBody("", "", messaging.DataChangeEvent, guidance.NewProcessingCalendar())
 )
-
-func init() {
-	dataChangeMsg.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
-}
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
 	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
+	dataChange.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
 
 	go func() {
 		go emissaryAttend(agent, nil)
-		//agent.Message(dataChangeMsg)
-		agent.Message(emissaryShutdownMsg)
+		agent.Message(dataChange)
+		agent.Message(emissaryShutdown)
 		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.isFinalizedEmissary())
 		ch <- struct{}{}
 	}()
@@ -32,6 +29,7 @@ func ExampleEmissary() {
 	close(ch)
 
 	//Output:
+	//test: Trace() -> service:us-west.. : event:data-change Broadcast() -> calendar data change event]
 	//test: emissaryAttend() -> [finalized:true]
 
 }

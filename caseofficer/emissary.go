@@ -13,14 +13,12 @@ func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Gui
 	//fn.startup(agent, guide, newAgent)
 
 	for {
-		// new assignment processing
 		select {
 		case <-agent.ticker.C():
 			//fn.update(agent, guide, newAgent)
 
 		default:
 		}
-		// control channel processing
 		select {
 		case msg := <-agent.emissary.C:
 			agent.setup(msg.Event())
