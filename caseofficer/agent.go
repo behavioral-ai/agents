@@ -110,6 +110,6 @@ func (c *caseOfficer) setup(event string) {
 	c.sender.setup(c, messaging.EmissaryChannel, event)
 }
 
-func (c *caseOfficer) dispatch(channel, event string) {
+func (c *caseOfficer) dispatch(event string) {
 	c.sender.dispatch(c, messaging.EmissaryChannel, event)
 }
