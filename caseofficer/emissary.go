@@ -34,7 +34,7 @@ func emissaryAttend(agent *caseOfficer, guide *guidance.Guidance, newAgent newSe
 					agent.dispatch(msg.Event())
 				}
 			default:
-				agent.Notify(MessageEventErrorStatus(agent.Uri(), msg))
+				agent.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}
