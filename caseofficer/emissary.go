@@ -8,15 +8,15 @@ import (
 
 type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent) messaging.Agent
 
-func emissaryAttend(agent *caseOfficer, guide *guidance.Guidance, newAgent newServiceAgent) {
-	agent.dispatch(messaging.StartupEvent)
-	createAssignments(agent, guide, newAgent)
+func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
+	createAssignments(agent, assignments, newAgent)
 	agent.startup()
+	agent.dispatch(messaging.StartupEvent)
 
 	for {
 		select {
 		case <-agent.ticker.C():
-			updateAssignments(agent, guide, newAgent)
+			updateAssignments(agent, assignments, newAgent)
 			agent.dispatch(messaging.TickEvent)
 		default:
 		}

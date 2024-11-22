@@ -38,7 +38,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 					agent.emissaryDispatch(msg.Event())
 				}
 			default:
-				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
+				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}

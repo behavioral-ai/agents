@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/advanced-go/agents/common"
 	"github.com/advanced-go/common/messaging"
 )
 
@@ -37,7 +36,7 @@ func masterAttend(agent *service) {
 				*/
 				agent.masterDispatch(msg.Event())
 			default:
-				agent.handler.Notify(common.MessageEventErrorStatus(agent.Uri(), msg))
+				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
 		default:
 		}

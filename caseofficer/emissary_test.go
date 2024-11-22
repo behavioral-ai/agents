@@ -2,6 +2,7 @@ package caseofficer
 
 import (
 	"fmt"
+	"github.com/advanced-go/agents/service"
 	"github.com/advanced-go/common/core"
 	"github.com/advanced-go/common/messaging"
 	"github.com/advanced-go/common/test"
@@ -22,7 +23,7 @@ func ExampleEmissary() {
 	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
 
 	go func() {
-		go emissaryAttend(agent, nil, nil, nil)
+		go emissaryAttend(agent, guidance.Assign, service.NewAgent)
 		//agent.Message(dataChangeMsg)
 		agent.Message(shutdownMsg)
 		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.IsFinalized())

@@ -75,7 +75,7 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend(c, guidance.Guide, service.NewAgent)
+	go emissaryAttend(c, guidance.Assign, service.NewAgent)
 
 }
 
