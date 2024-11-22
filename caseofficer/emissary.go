@@ -6,17 +6,18 @@ import (
 	"github.com/advanced-go/resiliency/guidance"
 )
 
-type newServiceAgent func(origin core.Origin, c *caseOfficer)
+type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent) messaging.Agent
 
-func emissaryAttend(agent *caseOfficer, fn *caseOfficerFunc, guide *guidance.Guidance, newAgent newServiceAgent) {
+func emissaryAttend(agent *caseOfficer, guide *guidance.Guidance, newAgent newServiceAgent) {
 	agent.dispatch(messaging.StartupEvent)
-	//fn.startup(agent, guide, newAgent)
+	createAssignments(agent, guide, newAgent)
+	agent.startup()
 
 	for {
 		select {
 		case <-agent.ticker.C():
-			//fn.update(agent, guide, newAgent)
-
+			updateAssignments(agent, guide, newAgent)
+			agent.dispatch(messaging.TickEvent)
 		default:
 		}
 		select {

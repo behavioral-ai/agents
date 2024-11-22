@@ -1,6 +1,7 @@
 package caseofficer
 
 import (
+	"github.com/advanced-go/agents/service"
 	"github.com/advanced-go/common/core"
 	"github.com/advanced-go/common/messaging"
 	"github.com/advanced-go/resiliency/guidance"
@@ -74,7 +75,9 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend(c, officer, guidance.Guide, initAgent)
+	go emissaryAttend(c, guidance.Guide, func(origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
+		return service.NewAgent(origin, handler)
+	})
 }
 
 // Shutdown - shutdown the agent
