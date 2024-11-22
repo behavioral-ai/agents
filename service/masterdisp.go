@@ -7,10 +7,11 @@ type dispatcher interface {
 	dispatch(agent *service, event string)
 }
 
-type master struct{}
+type master struct{ channel string }
 
 func newMasterDispatcher() dispatcher {
 	d := new(master)
+	d.channel = messaging.MasterChannel
 	return d
 }
 
@@ -19,8 +20,10 @@ func (d *master) setup(_ *service, _ string) {}
 func (d *master) dispatch(agent *service, event string) {
 	switch event {
 	case messaging.StartupEvent:
-		agent.handler.Trace(agent, messaging.MasterChannel, event, "startup")
+		agent.handler.Trace(agent, d.channel, event, "")
 	case messaging.ShutdownEvent:
-		agent.handler.Trace(agent, messaging.MasterChannel, event, "shutdown")
+		agent.handler.Trace(agent, d.channel, event, "")
+	case messaging.ObservationEvent:
+		agent.handler.Trace(agent, d.channel, event, "")
 	}
 }

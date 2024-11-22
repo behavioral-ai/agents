@@ -15,7 +15,7 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 	for {
 		select {
 		case <-ticker.C():
-			agent.emissaryDispatch("event:onTick")
+			agent.emissaryDispatch(messaging.TickEvent)
 			//agent.onTick(agent, ticker)
 			//		actual, status := observe.PercentThresholdQuery(r.handler, r.origin, time.Now().UTC(), time.Now().UTC())
 			//		if status.OK() {

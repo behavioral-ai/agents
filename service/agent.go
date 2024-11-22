@@ -9,7 +9,7 @@ import (
 
 const (
 	Class           = "service"
-	defaultDuration = time.Minute * 5
+	defaultDuration = time.Second * 10
 )
 
 type service struct {

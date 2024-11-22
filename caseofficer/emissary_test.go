@@ -7,25 +7,25 @@ import (
 	"github.com/advanced-go/common/messaging"
 	"github.com/advanced-go/common/test"
 	"github.com/advanced-go/resiliency/guidance"
+	"time"
 )
 
 var (
-	shutdownMsg   = messaging.NewControlMessage("", "", messaging.ShutdownEvent)
-	dataChangeMsg = messaging.NewControlMessage("", "", messaging.DataChangeEvent)
+	shutdown   = messaging.NewControlMessage("", "", messaging.ShutdownEvent)
+	dataChange = messaging.NewControlMessage("", "", messaging.DataChangeEvent)
 )
-
-func init() {
-	dataChangeMsg.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
-}
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
 	agent := newAgent(core.Origin{Region: "us-west"}, test.NewAgent("agent-test"), newTestDispatcher())
+	dataChange.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
 
 	go func() {
 		go emissaryAttend(agent, guidance.Assign, service.NewAgent)
-		//agent.Message(dataChangeMsg)
-		agent.Message(shutdownMsg)
+		agent.Message(dataChange)
+		time.Sleep(time.Minute * 1)
+		agent.Message(shutdown)
+
 		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.IsFinalized())
 		ch <- struct{}{}
 	}()

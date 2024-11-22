@@ -10,7 +10,7 @@ import (
 
 const (
 	Class              = "case-officer"
-	assignmentDuration = time.Minute * 30
+	assignmentDuration = time.Second * 15
 )
 
 type caseOfficer struct {
@@ -109,9 +109,9 @@ func (c *caseOfficer) reviseTicker(newDuration time.Duration) {
 }
 
 func (c *caseOfficer) setup(event string) {
-	c.sender.setup(c, messaging.EmissaryChannel, event)
+	c.sender.setup(c, event)
 }
 
 func (c *caseOfficer) dispatch(event string) {
-	c.sender.dispatch(c, messaging.EmissaryChannel, event)
+	c.sender.dispatch(c, event)
 }
