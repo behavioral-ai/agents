@@ -16,6 +16,7 @@ type service struct {
 	running bool
 	agentId string
 	origin  core.Origin
+	filter  messaging.TraceFilter
 
 	duration       time.Duration
 	emissary       *messaging.Channel
@@ -30,8 +31,8 @@ func serviceAgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new service agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
-	return newAgent(origin, handler, newMasterDispatcher(), newEmissaryDispatcher())
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, masterFilter, emissaryFilter *messaging.TraceFilter) messaging.Agent {
+	return newAgent(origin, handler, newMasterDispatcher(masterFilter, false), newEmissaryDispatcher(emissaryFilter, false))
 }
 
 func newAgent(origin core.Origin, handler messaging.OpsAgent, master, emissary dispatcher) *service {

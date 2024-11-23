@@ -12,7 +12,7 @@ const (
 	timeseriesDuration = time.Second * 2
 )
 
-// Observation - observation functions struct, a nod to Linus Torvalds and plain C
+// Observation - observation functions struct
 type Observation struct {
 	Timeseries func(h messaging.Notifier, origin core.Origin) (timeseries.Entry, *core.Status)
 }

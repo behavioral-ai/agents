@@ -15,13 +15,15 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 	for {
 		select {
 		case <-ticker.C():
-			agent.emissaryDispatch(messaging.TickEvent)
-			//agent.onTick(agent, ticker)
-			//		actual, status := observe.PercentThresholdQuery(r.handler, r.origin, time.Now().UTC(), time.Now().UTC())
-			//		if status.OK() {
-			//			m := messaging.NewRightChannelMessage("", r.agentId, messaging.ObservationEvent, common1.NewObservation(actual, limit))
-			//			r.Message(m)
-			//			}
+			e, status := observe.Timeseries(agent.handler, agent.origin)
+			if status.OK() {
+				m := messaging.NewControlMessage(messaging.MasterChannel, agent.Uri(), messaging.ObservationEvent)
+				m.SetContent(contentTypeObservation, observation{
+					Latency:  e.Latency,
+					Gradient: e.Gradient})
+				agent.Message(m)
+				agent.emissaryDispatch(messaging.ObservationEvent)
+			}
 		default:
 		}
 		select {

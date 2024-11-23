@@ -17,7 +17,7 @@ var (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(core.Origin{Region: guidance.WestRegion}, test.NewAgent("agent-test"), newTestDispatcher())
+	agent := newAgent(core.Origin{Region: guidance.WestRegion}, test.NewAgent("agent-test"), newDispatcher(nil, false))
 	dataChange.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
 
 	go func() {

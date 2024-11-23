@@ -30,8 +30,8 @@ func AgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new case officer agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent) messaging.OpsAgent {
-	return newAgent(origin, handler, newDispatcher())
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, filter *messaging.TraceFilter) messaging.OpsAgent {
+	return newAgent(origin, handler, newDispatcher(filter, false))
 }
 
 // newAgent - create a new case officer agent
