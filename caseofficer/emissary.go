@@ -6,7 +6,7 @@ import (
 	"github.com/advanced-go/resiliency/guidance"
 )
 
-type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, masterFilter, emissaryFilter *messaging.TraceFilter) messaging.Agent
+type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher) messaging.Agent
 
 func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
 	createAssignments(agent, assignments, newAgent)

@@ -22,6 +22,7 @@ type caseOfficer struct {
 	emissary      *messaging.Channel
 	serviceAgents *messaging.Exchange
 	handler       messaging.OpsAgent
+	dispatcher    messaging.TraceDispatcher
 	sender        dispatcher
 }
 
@@ -30,12 +31,12 @@ func AgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new case officer agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent, filter *messaging.TraceFilter) messaging.OpsAgent {
-	return newAgent(origin, handler, newDispatcher(filter, false))
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher) messaging.OpsAgent {
+	return newAgent(origin, handler, dispatcher, newDispatcher(false))
 }
 
 // newAgent - create a new case officer agent
-func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher) *caseOfficer {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher, sender dispatcher) *caseOfficer {
 	c := new(caseOfficer)
 	c.agentId = AgentUri(origin)
 	c.origin = origin
@@ -44,6 +45,7 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent, sender dispatcher)
 	c.handler = handler
 	c.serviceAgents = messaging.NewExchange()
 	c.sender = sender
+	c.dispatcher = dispatcher
 	return c
 }
 
@@ -113,5 +115,9 @@ func (c *caseOfficer) setup(event string) {
 }
 
 func (c *caseOfficer) dispatch(event string) {
+	if c.dispatcher != nil {
+		c.dispatcher.Trace(c, messaging.EmissaryChannel, event, "")
+		return
+	}
 	c.sender.dispatch(c, event)
 }

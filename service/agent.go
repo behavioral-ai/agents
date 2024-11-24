@@ -22,6 +22,7 @@ type service struct {
 	emissary       *messaging.Channel
 	master         *messaging.Channel
 	handler        messaging.OpsAgent
+	dispatcher     messaging.TraceDispatcher
 	masterSender   dispatcher
 	emissarySender dispatcher
 }
@@ -31,11 +32,11 @@ func serviceAgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new service agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent, masterFilter, emissaryFilter *messaging.TraceFilter) messaging.Agent {
-	return newAgent(origin, handler, newMasterDispatcher(masterFilter, false), newEmissaryDispatcher(emissaryFilter, false))
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher) messaging.Agent {
+	return newAgent(origin, handler, dispatcher, newMasterDispatcher(false), newEmissaryDispatcher(false))
 }
 
-func newAgent(origin core.Origin, handler messaging.OpsAgent, master, emissary dispatcher) *service {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher, master, emissary dispatcher) *service {
 	r := new(service)
 	r.origin = origin
 	r.agentId = serviceAgentUri(origin)
@@ -46,6 +47,7 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent, master, emissary d
 	r.handler = handler
 	r.masterSender = master
 	r.emissarySender = emissary
+	r.dispatcher = dispatcher
 	return r
 }
 
@@ -118,6 +120,10 @@ func (s *service) emissarySetup(event string) {
 }
 
 func (s *service) emissaryDispatch(event string) {
+	if s.dispatcher != nil {
+		s.dispatcher.Trace(s, messaging.EmissaryChannel, event, "")
+		return
+	}
 	s.emissarySender.dispatch(s, event)
 }
 
@@ -126,5 +132,9 @@ func (s *service) masterSetup(event string) {
 }
 
 func (s *service) masterDispatch(event string) {
+	if s.dispatcher != nil {
+		s.dispatcher.Trace(s, messaging.MasterChannel, event, "")
+		return
+	}
 	s.masterSender.dispatch(s, event)
 }

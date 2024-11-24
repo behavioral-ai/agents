@@ -36,7 +36,7 @@ func updateAssignments(agent *caseOfficer, assignments *guidance.Assignments, ne
 
 func addAssignments(agent *caseOfficer, entry []guidance.HostEntry, newAgent newServiceAgent) {
 	for _, e := range entry {
-		a := newAgent(e.Origin, agent, nil, nil)
+		a := newAgent(e.Origin, agent, agent.dispatcher)
 		err := agent.serviceAgents.Register(a)
 		if err != nil {
 			agent.Notify(core.NewStatusError(core.StatusInvalidArgument, err))

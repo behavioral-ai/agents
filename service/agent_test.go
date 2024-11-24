@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := NewAgent(core.Origin{Region: "us-central"}, nil)
+	a := NewAgent(core.Origin{Region: "us-central"}, nil, nil)
 
 	fmt.Printf("test: NewAgent() -> [uri:%v]\n", a)
 
