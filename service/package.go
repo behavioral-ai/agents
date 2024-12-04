@@ -1,5 +1,5 @@
 package service
 
 const (
-	PkgPath = "github/advanced-go/agents/service"
+	PkgPath = "github/behavioral-ai/agents/service"
 )

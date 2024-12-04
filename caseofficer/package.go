@@ -1,5 +1,5 @@
 package caseofficer
 
 const (
-	PkgPath = "github/advanced-go/agents/caseofficer"
+	PkgPath = "github/behavioral-ai/agents/caseofficer"
 )

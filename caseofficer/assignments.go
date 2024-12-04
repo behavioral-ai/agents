@@ -2,8 +2,8 @@ package caseofficer
 
 import (
 	"errors"
-	"github.com/advanced-go/common/core"
-	"github.com/advanced-go/resiliency/guidance"
+	"github.com/behavioral-ai/core/core"
+	"github.com/behavioral-ai/resiliency/guidance"
 )
 
 func createAssignments(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {

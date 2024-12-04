@@ -3,8 +3,8 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/advanced-go/common/core"
-	"github.com/advanced-go/common/messaging"
+	"github.com/behavioral-ai/core/core"
+	"github.com/behavioral-ai/core/messaging"
 	"reflect"
 )
 

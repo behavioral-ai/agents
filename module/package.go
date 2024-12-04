@@ -1,7 +1,7 @@
 package module
 
 const (
-	Authority = "github/advanced-go/agents"
+	Domain    = "github/behavioral-ai/agents"
 	RouteName = "resiliency"
 	Version   = "2.2.2"
 	Ver1      = "v1"

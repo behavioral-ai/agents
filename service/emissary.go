@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/advanced-go/agents/common"
-	"github.com/advanced-go/common/messaging"
-	"github.com/advanced-go/resiliency/guidance"
+	"github.com/behavioral-ai/agents/common"
+	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/resiliency/guidance"
 )
 
 // emissary attention

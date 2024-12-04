@@ -1,9 +1,9 @@
 package caseofficer
 
 import (
-	"github.com/advanced-go/common/core"
-	"github.com/advanced-go/common/messaging"
-	"github.com/advanced-go/resiliency/guidance"
+	"github.com/behavioral-ai/core/core"
+	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/resiliency/guidance"
 )
 
 type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher) messaging.Agent

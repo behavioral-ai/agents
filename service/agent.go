@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/advanced-go/agents/common"
-	"github.com/advanced-go/common/core"
-	"github.com/advanced-go/common/messaging"
+	"github.com/behavioral-ai/agents/common"
+	"github.com/behavioral-ai/core/core"
+	"github.com/behavioral-ai/core/messaging"
 	"time"
 )
 

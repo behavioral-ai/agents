@@ -1,6 +1,6 @@
 package service
 
-import "github.com/advanced-go/common/messaging"
+import "github.com/behavioral-ai/core/messaging"
 
 type dispatcher interface {
 	setup(agent *service, event string)

@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	"github.com/advanced-go/common/core"
-	"github.com/advanced-go/common/messaging"
-	"github.com/advanced-go/common/test"
+	"github.com/behavioral-ai/core/core"
+	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/core/test"
 )
 
 var (

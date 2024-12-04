@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/advanced-go/common/core"
+	"github.com/behavioral-ai/core/core"
 )
 
 func ExampleNewAgent() {
