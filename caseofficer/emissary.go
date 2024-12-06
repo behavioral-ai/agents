@@ -6,7 +6,7 @@ import (
 	"github.com/behavioral-ai/resiliency/guidance"
 )
 
-type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.TraceDispatcher) messaging.Agent
+type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
 
 func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
 	createAssignments(agent, assignments, newAgent)

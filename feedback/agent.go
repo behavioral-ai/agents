@@ -1,7 +1,6 @@
 package feedback
 
 import (
-	"github.com/behavioral-ai/agents/service"
 	"github.com/behavioral-ai/core/core"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/resiliency/guidance"
@@ -75,7 +74,7 @@ func (c *feedback) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend(c, guidance.Assign, service.NewAgent)
+	go emissaryAttend(c, guidance.Assign)
 
 }
 
