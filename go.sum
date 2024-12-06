@@ -1,5 +1,7 @@
 github.com/behavioral-ai/core v0.0.0-20241204004648-19df76691f5e h1:L0lrlPb73CNyGV7faFRMiENf8w/YAhCyiD+n4QuL27Y=
 github.com/behavioral-ai/core v0.0.0-20241204004648-19df76691f5e/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20241206183631-90e035303fd3 h1:59gUlrh1IHuj10eYprzlrGrPYSOhO4wJU54pDsxqwOc=
+github.com/behavioral-ai/core v0.0.0-20241206183631-90e035303fd3/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/behavioral-ai/log v0.0.0-20241204133523-0244d9a2edb4 h1:g5+PEyNOdT6fWINffPO9KhHTMnx56m+LVDvcaeim0qk=
 github.com/behavioral-ai/log v0.0.0-20241204133523-0244d9a2edb4/go.mod h1:bX5HX19BLR7iv4IxgjUerrSBi5ozdRk6ia8RXvxNjXA=
 github.com/behavioral-ai/resiliency v0.0.0-20241204144107-77df91af3e63 h1:yJ1w04MpcJ4AKr5DpgGyh4lD6V2nltYTpHsChQDA9mY=
