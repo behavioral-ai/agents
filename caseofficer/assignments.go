@@ -6,7 +6,7 @@ import (
 	"github.com/behavioral-ai/resiliency/guidance"
 )
 
-func createAssignments(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
+func createAssignments(agent *caseOfficer, assignments *guidance.Assignments, newAgent createAgent) {
 	if newAgent == nil {
 		agent.Notify(core.NewStatusError(core.StatusInvalidArgument, errors.New("error: create assignments newAgent is nil")))
 		return
@@ -20,7 +20,7 @@ func createAssignments(agent *caseOfficer, assignments *guidance.Assignments, ne
 	}
 }
 
-func updateAssignments(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
+func updateAssignments(agent *caseOfficer, assignments *guidance.Assignments, newAgent createAgent) {
 	if newAgent == nil {
 		agent.Notify(core.NewStatusError(core.StatusInvalidArgument, errors.New("error: update assignments newAgent is nil")))
 		return
@@ -34,7 +34,7 @@ func updateAssignments(agent *caseOfficer, assignments *guidance.Assignments, ne
 	}
 }
 
-func addAssignments(agent *caseOfficer, entry []guidance.HostEntry, newAgent newServiceAgent) {
+func addAssignments(agent *caseOfficer, entry []guidance.HostEntry, newAgent createAgent) {
 	for _, e := range entry {
 		a := newAgent(e.Origin, agent, agent.dispatcher)
 		err := agent.serviceAgents.Register(a)

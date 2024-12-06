@@ -77,8 +77,7 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go emissaryAttend(c, guidance.Assign, service.NewAgent)
-
+	go emissaryAttend(c, guidance.Assign, service.NewAgent, newFeedbackAgent)
 }
 
 // Shutdown - shutdown the agent

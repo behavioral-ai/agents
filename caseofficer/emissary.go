@@ -1,22 +1,31 @@
 package caseofficer
 
 import (
+	"github.com/behavioral-ai/agents/feedback"
 	"github.com/behavioral-ai/core/core"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/resiliency/guidance"
 )
 
-type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
+type createAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
 
-func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newAgent newServiceAgent) {
-	createAssignments(agent, assignments, newAgent)
+func newFeedbackAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent {
+	return feedback.NewAgent(origin, handler, dispatcher)
+}
+
+//type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
+//type newFeedbackAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
+
+func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newService createAgent, newFeedback createAgent) {
+	createAssignments(agent, assignments, newService)
+	addFeedback(agent, newFeedback)
 	agent.startup()
 	agent.dispatch(messaging.StartupEvent)
 
 	for {
 		select {
 		case <-agent.ticker.C():
-			updateAssignments(agent, assignments, newAgent)
+			updateAssignments(agent, assignments, newService)
 			agent.dispatch(messaging.TickEvent)
 		default:
 		}

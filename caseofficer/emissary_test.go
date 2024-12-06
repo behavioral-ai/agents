@@ -22,7 +22,7 @@ func ExampleEmissary() {
 	dataChange.SetContent(guidance.ContentTypeCalendar, guidance.NewProcessingCalendar())
 
 	go func() {
-		go emissaryAttend(agent, guidance.Assign, service.NewAgent)
+		go emissaryAttend(agent, guidance.Assign, service.NewAgent, newFeedbackAgent)
 		agent.Message(dataChange)
 		time.Sleep(time.Minute * 1)
 		agent.Message(shutdown)
