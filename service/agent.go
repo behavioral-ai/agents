@@ -20,8 +20,8 @@ type service struct {
 
 	duration time.Duration
 	handler  messaging.OpsAgent
-	emissary *comms
-	master   *comms
+	emissary *communications
+	master   *communications
 }
 
 func serviceAgentUri(origin core.Origin) string {

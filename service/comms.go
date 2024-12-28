@@ -2,20 +2,20 @@ package service
 
 import "github.com/behavioral-ai/core/messaging"
 
-type comms struct {
-	channel string
-	ch      *messaging.Channel
-	global  messaging.Dispatcher
-	local   dispatcher
+type communications struct {
+	name   string
+	ch     *messaging.Channel
+	global messaging.Dispatcher
+	local  dispatcher
 }
 
-func newComms(master bool, global messaging.Dispatcher, local dispatcher) *comms {
-	c := new(comms)
+func newComms(master bool, global messaging.Dispatcher, local dispatcher) *communications {
+	c := new(communications)
 	if master {
-		c.channel = messaging.MasterChannel
+		c.name = messaging.MasterChannel
 		c.ch = messaging.NewEmissaryChannel(true)
 	} else {
-		c.channel = messaging.EmissaryChannel
+		c.name = messaging.EmissaryChannel
 		c.ch = messaging.NewMasterChannel(true)
 	}
 	c.global = global
@@ -23,27 +23,29 @@ func newComms(master bool, global messaging.Dispatcher, local dispatcher) *comms
 	return c
 }
 
-func newMasterComms(global messaging.Dispatcher, local dispatcher) *comms {
+func newMasterComms(global messaging.Dispatcher, local dispatcher) *communications {
 	return newComms(true, global, local)
 }
 
-func newEmmissaryComms(global messaging.Dispatcher, local dispatcher) *comms {
+func newEmmissaryComms(global messaging.Dispatcher, local dispatcher) *communications {
 	return newComms(false, global, local)
 }
 
-func (c *comms) isFinalized() bool { return c.ch.IsFinalized() }
+func (c *communications) channel() *messaging.Channel { return c.ch }
 
-func (c *comms) finalize() { c.ch.Close() }
+func (c *communications) isFinalized() bool { return c.ch.IsFinalized() }
 
-func (c *comms) enable() { c.ch.Enable() }
+func (c *communications) finalize() { c.ch.Close() }
 
-func (c *comms) send(m *messaging.Message) { c.ch.C <- m }
+func (c *communications) enable() { c.ch.Enable() }
 
-func (c *comms) setup(agent *service, event string) { c.local.setup(agent, event) }
+func (c *communications) send(m *messaging.Message) { c.ch.C <- m }
 
-func (c *comms) dispatch(agent *service, event string) {
+func (c *communications) setup(agent *service, event string) { c.local.setup(agent, event) }
+
+func (c *communications) dispatch(agent *service, event string) {
 	if c.global != nil {
-		c.global.Dispatch(agent, c.channel, event, "")
+		c.global.Dispatch(agent, c.name, event, "")
 	}
 	if c.local != nil {
 		c.local.dispatch(agent, event)
