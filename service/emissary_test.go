@@ -23,7 +23,7 @@ func ExampleEmissary() {
 		go emissaryAttend(agent, nil)
 		agent.Message(dataChange)
 		agent.Message(emissaryShutdown)
-		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.isFinalizedEmissary())
+		fmt.Printf("test: emissaryAttend() -> [finalized:%v]\n", agent.emissary.isFinalized())
 		ch <- struct{}{}
 	}()
 	<-ch

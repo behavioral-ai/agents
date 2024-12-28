@@ -6,17 +6,17 @@ import (
 
 // master attention
 func masterAttend(agent *service) {
-	agent.masterDispatch(messaging.StartupEvent)
+	agent.master.dispatch(messaging.StartupEvent)
 
 	for {
 		// message processing
 		select {
-		case msg := <-agent.master.C:
-			agent.masterSetup(msg.Event())
+		case msg := <-agent.master.ch.C:
+			agent.master.setup(msg.Event())
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
-				agent.masterFinalize()
-				agent.masterDispatch(msg.Event())
+				agent.master.finalize()
+				agent.master.dispatch(msg.Event())
 				return
 			case messaging.ObservationEvent:
 				observe, status := getObservation(agent.handler, agent.Uri(), msg)
@@ -35,7 +35,7 @@ func masterAttend(agent *service) {
 
 
 					*/
-					agent.masterDispatch(msg.Event())
+					agent.master.dispatch(msg.Event())
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))

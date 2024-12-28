@@ -18,13 +18,10 @@ type service struct {
 	origin  core.Origin
 	filter  messaging.TraceFilter
 
-	duration       time.Duration
-	emissary       *messaging.Channel
-	master         *messaging.Channel
-	handler        messaging.OpsAgent
-	dispatcher     messaging.Dispatcher
-	masterSender   dispatcher
-	emissarySender dispatcher
+	duration time.Duration
+	handler  messaging.OpsAgent
+	emissary *comms
+	master   *comms
 }
 
 func serviceAgentUri(origin core.Origin) string {
@@ -32,22 +29,19 @@ func serviceAgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new service agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent {
-	return newAgent(origin, handler, dispatcher, newMasterDispatcher(false), newEmissaryDispatcher(false))
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher) messaging.Agent {
+	return newAgent(origin, handler, global, newMasterDispatcher(false), newEmissaryDispatcher(false))
 }
 
-func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher, master, emissary dispatcher) *service {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher, master, emissary dispatcher) *service {
 	r := new(service)
 	r.origin = origin
 	r.agentId = serviceAgentUri(origin)
 	r.duration = defaultDuration
 
-	r.emissary = messaging.NewEmissaryChannel(true)
-	r.master = messaging.NewMasterChannel(true)
 	r.handler = handler
-	r.masterSender = master
-	r.emissarySender = emissary
-	r.dispatcher = dispatcher
+	r.emissary = newEmmissaryComms(r, global, emissary)
+	r.master = newMasterComms(r, global, master)
 	return r
 }
 
@@ -64,11 +58,11 @@ func (s *service) Message(m *messaging.Message) {
 	}
 	switch m.To() {
 	case messaging.EmissaryChannel:
-		s.emissary.C <- m
+		s.emissary.send(m)
 	case messaging.MasterChannel:
-		s.master.C <- m
+		s.master.send(m)
 	default:
-		s.emissary.C <- m
+		s.emissary.send(m)
 	}
 }
 
@@ -89,52 +83,12 @@ func (s *service) Shutdown() {
 	}
 	s.running = false
 	msg := messaging.NewControlMessage(s.Uri(), s.Uri(), messaging.ShutdownEvent)
-	s.emissary.Enable()
-	s.emissary.C <- msg
-	s.master.Enable()
-	s.master.C <- msg
+	s.emissary.enable()
+	s.emissary.send(msg)
+	s.master.enable()
+	s.master.send(msg)
 }
 
 func (s *service) IsFinalized() bool {
-	return s.emissary.IsFinalized() && s.master.IsFinalized()
-}
-
-func (s *service) isFinalizedEmissary() bool {
-	return s.emissary.IsFinalized()
-}
-
-func (s *service) emissaryFinalize() {
-	s.emissary.Close()
-}
-
-func (s *service) isFinalizedMaster() bool {
-	return s.master.IsFinalized()
-}
-
-func (s *service) masterFinalize() {
-	s.master.Close()
-}
-
-func (s *service) emissarySetup(event string) {
-	s.emissarySender.setup(s, event)
-}
-
-func (s *service) emissaryDispatch(event string) {
-	if s.dispatcher != nil {
-		s.dispatcher.Dispatch(s, messaging.EmissaryChannel, event, "")
-		return
-	}
-	s.emissarySender.dispatch(s, event)
-}
-
-func (s *service) masterSetup(event string) {
-	s.masterSender.setup(s, event)
-}
-
-func (s *service) masterDispatch(event string) {
-	if s.dispatcher != nil {
-		s.dispatcher.Dispatch(s, messaging.MasterChannel, event, "")
-		return
-	}
-	s.masterSender.dispatch(s, event)
+	return s.emissary.isFinalized() && s.master.isFinalized()
 }

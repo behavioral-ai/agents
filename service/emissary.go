@@ -8,7 +8,7 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *service, observe *common.Observation) {
-	agent.emissaryDispatch(messaging.StartupEvent)
+	agent.emissary.dispatch(messaging.StartupEvent)
 	ticker := messaging.NewPrimaryTicker(agent.duration)
 
 	ticker.Start(-1)
@@ -22,22 +22,22 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 					Latency:  e.Latency,
 					Gradient: e.Gradient})
 				agent.Message(m)
-				agent.emissaryDispatch(messaging.ObservationEvent)
+				agent.emissary.dispatch(messaging.ObservationEvent)
 			}
 		default:
 		}
 		select {
-		case msg := <-agent.emissary.C:
-			agent.emissarySetup(msg.Event())
+		case msg := <-agent.emissary.ch.C:
+			agent.emissary.setup(msg.Event())
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				ticker.Stop()
-				agent.emissaryFinalize()
-				agent.emissaryDispatch(msg.Event())
+				agent.emissary.finalize()
+				agent.emissary.dispatch(msg.Event())
 				return
 			case messaging.DataChangeEvent:
 				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
-					agent.emissaryDispatch(msg.Event())
+					agent.emissary.dispatch(msg.Event())
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))

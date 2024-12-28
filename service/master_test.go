@@ -21,7 +21,7 @@ func ExampleMaster() {
 		go masterAttend(agent)
 		//agent.Message(observationMsg)
 		agent.Message(masterShutdown)
-		fmt.Printf("test: masterAttend() -> [finalized:%v]\n", agent.isFinalizedMaster())
+		fmt.Printf("test: masterAttend() -> [finalized:%v]\n", agent.master.isFinalized())
 		ch <- struct{}{}
 	}()
 	<-ch
