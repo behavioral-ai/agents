@@ -8,36 +8,47 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *service, observe *common.Observation) {
-	agent.emissary.dispatch(messaging.StartupEvent)
+	paused := false
+	agent.emissary.dispatch(agent, messaging.StartupEvent)
 	ticker := messaging.NewPrimaryTicker(agent.duration)
 
 	ticker.Start(-1)
 	for {
 		select {
 		case <-ticker.C():
-			e, status := observe.Timeseries(agent.handler, agent.origin)
-			if status.OK() {
-				m := messaging.NewControlMessage(messaging.MasterChannel, agent.Uri(), messaging.ObservationEvent)
-				m.SetContent(contentTypeObservation, observation{
-					Latency:  e.Latency,
-					Gradient: e.Gradient})
-				agent.Message(m)
-				agent.emissary.dispatch(messaging.ObservationEvent)
+			if !paused {
+				e, status := observe.Timeseries(agent.handler, agent.origin)
+				if status.OK() {
+					m := messaging.NewControlMessage(messaging.MasterChannel, agent.Uri(), messaging.ObservationEvent)
+					m.SetContent(contentTypeObservation, observation{
+						Latency:  e.Latency,
+						Gradient: e.Gradient})
+					agent.master.send(m)
+					agent.emissary.dispatch(agent, messaging.ObservationEvent)
+				}
 			}
 		default:
 		}
 		select {
 		case msg := <-agent.emissary.ch.C:
-			agent.emissary.setup(msg.Event())
+			agent.emissary.setup(agent, msg.Event())
 			switch msg.Event() {
+			case messaging.PauseEvent:
+				paused = true
+				agent.emissary.dispatch(agent, msg.Event())
+			case messaging.ResumeEvent:
+				paused = false
+				agent.emissary.dispatch(agent, msg.Event())
 			case messaging.ShutdownEvent:
 				ticker.Stop()
 				agent.emissary.finalize()
-				agent.emissary.dispatch(msg.Event())
+				agent.emissary.dispatch(agent, msg.Event())
 				return
 			case messaging.DataChangeEvent:
-				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
-					agent.emissary.dispatch(msg.Event())
+				if !paused {
+					if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
+						agent.emissary.dispatch(agent, msg.Event())
+					}
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))

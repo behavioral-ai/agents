@@ -40,8 +40,8 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.D
 	r.duration = defaultDuration
 
 	r.handler = handler
-	r.emissary = newEmmissaryComms(r, global, emissary)
-	r.master = newMasterComms(r, global, master)
+	r.emissary = newEmmissaryComms(global, emissary)
+	r.master = newMasterComms(global, master)
 	return r
 }
 

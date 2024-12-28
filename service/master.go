@@ -6,36 +6,45 @@ import (
 
 // master attention
 func masterAttend(agent *service) {
-	agent.master.dispatch(messaging.StartupEvent)
+	paused := false
+	agent.master.dispatch(agent, messaging.StartupEvent)
 
 	for {
 		// message processing
 		select {
 		case msg := <-agent.master.ch.C:
-			agent.master.setup(msg.Event())
+			agent.master.setup(agent, msg.Event())
 			switch msg.Event() {
+			case messaging.PauseEvent:
+				paused = true
+				agent.master.dispatch(agent, msg.Event())
+			case messaging.ResumeEvent:
+				paused = false
+				agent.master.dispatch(agent, msg.Event())
 			case messaging.ShutdownEvent:
 				agent.master.finalize()
-				agent.master.dispatch(msg.Event())
+				agent.master.dispatch(agent, msg.Event())
 				return
 			case messaging.ObservationEvent:
-				observe, status := getObservation(agent.handler, agent.Uri(), msg)
-				if status.OK() {
-					if observe.Gradient > 10 {
-					}
-					/*
-						inf := runInference(r, observe)
-						if inf == nil {
-							continue
+				if !paused {
+					observe, status := getObservation(agent.handler, agent.Uri(), msg)
+					if status.OK() {
+						if observe.Gradient > 10 {
 						}
-						action := newAction(inf)
-						rateLimiting.Limit = action.Limit
-						rateLimiting.Burst = action.Burst
-						common1.AddRateLimitingExperience(r.handler, r.origin, inf, action, exp)
+						/*
+							inf := runInference(r, observe)
+							if inf == nil {
+								continue
+							}
+							action := newAction(inf)
+							rateLimiting.Limit = action.Limit
+							rateLimiting.Burst = action.Burst
+							common1.AddRateLimitingExperience(r.handler, r.origin, inf, action, exp)
 
 
-					*/
-					agent.master.dispatch(msg.Event())
+						*/
+					}
+					agent.master.dispatch(agent, msg.Event())
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))

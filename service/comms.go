@@ -4,15 +4,13 @@ import "github.com/behavioral-ai/core/messaging"
 
 type comms struct {
 	channel string
-	agent   *service
 	ch      *messaging.Channel
 	global  messaging.Dispatcher
 	local   dispatcher
 }
 
-func newComms(master bool, agent *service, global messaging.Dispatcher, local dispatcher) *comms {
+func newComms(master bool, global messaging.Dispatcher, local dispatcher) *comms {
 	c := new(comms)
-	c.agent = agent
 	if master {
 		c.channel = messaging.MasterChannel
 		c.ch = messaging.NewEmissaryChannel(true)
@@ -25,12 +23,12 @@ func newComms(master bool, agent *service, global messaging.Dispatcher, local di
 	return c
 }
 
-func newMasterComms(agent *service, global messaging.Dispatcher, local dispatcher) *comms {
-	return newComms(true, agent, global, local)
+func newMasterComms(global messaging.Dispatcher, local dispatcher) *comms {
+	return newComms(true, global, local)
 }
 
-func newEmmissaryComms(agent *service, global messaging.Dispatcher, local dispatcher) *comms {
-	return newComms(false, agent, global, local)
+func newEmmissaryComms(global messaging.Dispatcher, local dispatcher) *comms {
+	return newComms(false, global, local)
 }
 
 func (c *comms) isFinalized() bool { return c.ch.IsFinalized() }
@@ -41,14 +39,13 @@ func (c *comms) enable() { c.ch.Enable() }
 
 func (c *comms) send(m *messaging.Message) { c.ch.C <- m }
 
-func (c *comms) setup(event string) { c.local.setup(c.agent, event) }
+func (c *comms) setup(agent *service, event string) { c.local.setup(agent, event) }
 
-func (c *comms) dispatch(event string) {
+func (c *comms) dispatch(agent *service, event string) {
 	if c.global != nil {
-		c.global.Dispatch(c.agent, c.channel, event, "")
-		//return
+		c.global.Dispatch(agent, c.channel, event, "")
 	}
 	if c.local != nil {
-		c.local.dispatch(c.agent, event)
+		c.local.dispatch(agent, event)
 	}
 }
