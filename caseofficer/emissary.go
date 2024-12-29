@@ -7,10 +7,10 @@ import (
 	"github.com/behavioral-ai/resiliency/guidance"
 )
 
-type createAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
+type createAgent func(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher) messaging.Agent
 
-func newFeedbackAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent {
-	return feedback.NewAgent(origin, handler, dispatcher)
+func newFeedbackAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher) messaging.Agent {
+	return feedback.NewAgent(origin, handler, global)
 }
 
 //type newServiceAgent func(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent
@@ -38,10 +38,8 @@ func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newSe
 			switch msg.Event() {
 			case messaging.PauseEvent:
 				paused = true
-				agent.dispatch(msg.Event())
 			case messaging.ResumeEvent:
 				paused = false
-				agent.dispatch(msg.Event())
 			case messaging.ShutdownEvent:
 				agent.finalize()
 				agent.dispatch(msg.Event())
@@ -49,11 +47,11 @@ func emissaryAttend(agent *caseOfficer, assignments *guidance.Assignments, newSe
 			case messaging.DataChangeEvent:
 				if msg.IsContentType(guidance.ContentTypeCalendar) {
 					agent.serviceAgents.Broadcast(msg)
-					agent.dispatch(msg.Event())
 				}
 			default:
 				agent.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
+			agent.dispatch(msg.Event())
 		default:
 		}
 	}

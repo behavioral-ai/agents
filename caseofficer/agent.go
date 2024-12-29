@@ -22,8 +22,8 @@ type caseOfficer struct {
 	emissary      *messaging.Channel
 	serviceAgents *messaging.Exchange
 	handler       messaging.OpsAgent
-	dispatcher    messaging.Dispatcher
-	sender        dispatcher
+	global        messaging.Dispatcher
+	local         dispatcher
 }
 
 func AgentUri(origin core.Origin) string {
@@ -31,12 +31,12 @@ func AgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new case officer agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.OpsAgent {
-	return newAgent(origin, handler, dispatcher, newDispatcher(false))
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher) messaging.OpsAgent {
+	return newAgent(origin, handler, global, newDispatcher(false))
 }
 
 // newAgent - create a new case officer agent
-func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher, sender dispatcher) *caseOfficer {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher, local dispatcher) *caseOfficer {
 	c := new(caseOfficer)
 	c.agentId = AgentUri(origin)
 	c.origin = origin
@@ -44,8 +44,8 @@ func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messagi
 	c.emissary = messaging.NewEmissaryChannel(true)
 	c.handler = handler
 	c.serviceAgents = messaging.NewExchange()
-	c.sender = sender
-	c.dispatcher = dispatcher
+	c.local = local
+	c.global = global
 	return c
 }
 
@@ -110,13 +110,16 @@ func (c *caseOfficer) reviseTicker(newDuration time.Duration) {
 }
 
 func (c *caseOfficer) setup(event string) {
-	c.sender.setup(c, event)
+	if c.local != nil {
+		c.local.setup(c, event)
+	}
 }
 
 func (c *caseOfficer) dispatch(event string) {
-	if c.dispatcher != nil {
-		c.dispatcher.Dispatch(c, messaging.EmissaryChannel, event, "")
-		return
+	if c.global != nil {
+		c.global.Dispatch(c, messaging.EmissaryChannel, event, "")
 	}
-	c.sender.dispatch(c, event)
+	if c.local != nil {
+		c.local.dispatch(c, event)
+	}
 }

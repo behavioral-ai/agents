@@ -36,10 +36,8 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 			switch msg.Event() {
 			case messaging.PauseEvent:
 				paused = true
-				comms.dispatch(agent, msg.Event())
 			case messaging.ResumeEvent:
 				paused = false
-				comms.dispatch(agent, msg.Event())
 			case messaging.ShutdownEvent:
 				ticker.Stop()
 				comms.finalize()
@@ -47,11 +45,12 @@ func emissaryAttend(agent *service, observe *common.Observation) {
 				return
 			case messaging.DataChangeEvent:
 				if p := guidance.GetCalendar(agent.handler, agent.Uri(), msg); p != nil {
-					comms.dispatch(agent, msg.Event())
+					//comms.dispatch(agent, msg.Event())
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
+			comms.dispatch(agent, msg.Event())
 		default:
 		}
 	}

@@ -18,10 +18,8 @@ func masterAttend(agent *service) {
 			switch msg.Event() {
 			case messaging.PauseEvent:
 				paused = true
-				comms.dispatch(agent, msg.Event())
 			case messaging.ResumeEvent:
 				paused = false
-				comms.dispatch(agent, msg.Event())
 			case messaging.ShutdownEvent:
 				comms.finalize()
 				comms.dispatch(agent, msg.Event())
@@ -45,11 +43,11 @@ func masterAttend(agent *service) {
 
 						*/
 					}
-					comms.dispatch(agent, msg.Event())
 				}
 			default:
 				agent.handler.Notify(messaging.EventErrorStatus(agent.Uri(), msg))
 			}
+			comms.dispatch(agent, msg.Event())
 		default:
 		}
 	}

@@ -17,11 +17,11 @@ type feedback struct {
 	agentId string
 	origin  core.Origin
 
-	ticker     *messaging.Ticker
-	emissary   *messaging.Channel
-	handler    messaging.OpsAgent
-	dispatcher messaging.Dispatcher
-	sender     dispatcher
+	ticker   *messaging.Ticker
+	emissary *messaging.Channel
+	handler  messaging.OpsAgent
+	global   messaging.Dispatcher
+	local    dispatcher
 }
 
 func AgentUri(origin core.Origin) string {
@@ -29,20 +29,20 @@ func AgentUri(origin core.Origin) string {
 }
 
 // NewAgent - create a new feedback agent
-func NewAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher) messaging.Agent {
-	return newAgent(origin, handler, dispatcher, newDispatcher(false))
+func NewAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher) messaging.Agent {
+	return newAgent(origin, handler, global, newDispatcher(false))
 }
 
 // newAgent - create a new feedback agent
-func newAgent(origin core.Origin, handler messaging.OpsAgent, dispatcher messaging.Dispatcher, sender dispatcher) *feedback {
+func newAgent(origin core.Origin, handler messaging.OpsAgent, global messaging.Dispatcher, local dispatcher) *feedback {
 	c := new(feedback)
 	c.agentId = AgentUri(origin)
 	c.origin = origin
 	c.ticker = messaging.NewPrimaryTicker(duration)
 	c.emissary = messaging.NewEmissaryChannel(true)
 	c.handler = handler
-	c.sender = sender
-	c.dispatcher = dispatcher
+	c.global = global
+	c.local = local
 	return c
 }
 
@@ -102,13 +102,16 @@ func (c *feedback) finalize() {
 }
 
 func (c *feedback) setup(event string) {
-	c.sender.setup(c, event)
+	if c.local != nil {
+		c.local.setup(c, event)
+	}
 }
 
 func (c *feedback) dispatch(event string) {
-	if c.dispatcher != nil {
-		c.dispatcher.Dispatch(c, messaging.EmissaryChannel, event, "")
-		return
+	if c.global != nil {
+		c.global.Dispatch(c, messaging.EmissaryChannel, event, "")
 	}
-	c.sender.dispatch(c, event)
+	if c.local != nil {
+		c.local.dispatch(c, event)
+	}
 }
